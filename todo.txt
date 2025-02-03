@@ -17,7 +17,7 @@ Items que podem ser encontrados quando o jogador parte um bloco, desaparecem a c
 (POSITIVOS)
 - O poder da bomba aumenta, ou seja, dá para partir mais blocos. (ATIVA-SE AUTOMATICAMENTE)
 - Aumenta a velocidade do jogador. (ATIVA-SE AUTOMATICAMENTE)
-- (Poder)Chutar: O jogador pode chutar a bomba, que remove a bomba.
+- (Poder) Chutar: O jogador pode chutar a bomba, que remove a bomba.
 - Se o jogador tiver o poder 'chutar' e usá-lo, ela vai para outra parte do mapa, perto do jogador (raio de 4-6 blocos para todas as direções). (ATIVA-SE AUTOMATICAMENTE)
 - Aumenta as chances de conseguir power-ups ao partir blocos em 2x. (5%)(ATIVA-SE AUTOMATICAMENTE)
 - Aumenta a visibilidade do jogador (APENAS ENCONTRADO NO MODO DE JOGO 'LABIRINTO' E 'DIFÍCIL') (ATIVA-SE AUTOMATICAMENTE)
