@@ -41,3 +41,7 @@ Parte 1 bloco -> 10 pontos
 Mata 1 inimigo -> 20 pontos
 Escapa do mapa -> 100 pontos
 (MODO DIFÍCIL) Cada segundo restante -> 2 pontos
+
+Opções (EXTREMAMENTE OPCIONAL):
+
+Menu incial em que se pode adicionar definições, como mudar o idioma/volume, um botão que explica como se joga.
