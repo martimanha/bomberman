@@ -1,0 +1,1 @@
+//Onde ocorre o gerenciamento das explosões e movimento dos personagens (Inimigos e jogador) ocorre
