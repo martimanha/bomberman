@@ -1,3 +1,1 @@
-class Bomba{
-    
-}
+// ygahsuijpkog+lç
