@@ -1,10 +1,12 @@
 package src.ui;
 
-public class GameFrame {
+import javax.swing.JFrame;
+
+public class GameFrame extends JFrame {
     public GameFrame(){
         this.setTitle("Bomberman Game");
 
-        this.setdefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
             this.setResizable(false);
             this.setContentPane(new GamePanel());
             this.pack();
