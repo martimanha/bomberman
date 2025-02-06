@@ -2,23 +2,41 @@ package src.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MenuPanel extends JPanel{
     public MenuPanel(GameFrame frame){
-        this.setLayout(new GridLayout(3,1));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(20, 20, 20, 20);
 
-        JButton playButton = new JButton("Jogar");
-        JButton rulesButton = new JButton("Regras");
-        JButton settingsButton = new JButton("Definições");
+        //Background
+        JLabel background = new JLabel(new ImageIcon(getClass().getResource(""))); //MUDAR PARA O FICHEIRO RESPETIVO
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        add(background, gbc);
 
-        playButton.addActionListener(e -> frame.showGameModeSelection());
-        rulesButton.addActionListener(e -> frame.showRules());
-        settingsButton.addActionListener(e -> frame.showSettings());
+        //Botoes, mudar todos os "" pelos arquivos respetivos
+        JButton playButton = createButton("", e -> frame.showGameModeSelection());
+        JButton rulesButton = createButton("", e -> frame.showRules());
+        JButton settingsButton = createButton("", e -> frame.showSettings());
 
-        this.add(playButton);
-        this.add(rulesButton);
-        this.add(settingsButton);
+        gbc.gridwidth = 1;
+        gbc.gridy = 1;
+        add(playButton, gbc);
+
+        gbc.gridy = 2;
+        add(rulesButton, gbc);
+
+        gbc.gridy = 3;
+        add(settingsButton, gbc);
+    }
+
+    private JButton createButton(String imagePath, java.awt.event.ActionListener action){
+        JButton button = new JButton(new ImageIcon(getClass().getResource(imagePath)));
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.addActionListener(action);
+        return button;
     }
 }
