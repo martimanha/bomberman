@@ -10,16 +10,16 @@ public class MenuPanel extends JPanel{
         gbc.insets = new Insets(20, 20, 20, 20);
 
         //Background
-        JLabel background = new JLabel(new ImageIcon(getClass().getResource(""))); //MUDAR PARA O FICHEIRO RESPETIVO
+        JLabel background = new JLabel(new ImageIcon(getClass().getResource("/menu_inicial/background.jpg")));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         add(background, gbc);
 
-        //Botoes, mudar todos os "" pelos arquivos respetivos
-        JButton playButton = createButton("", e -> frame.showGameModeSelection());
-        JButton rulesButton = createButton("", e -> frame.showRules());
-        JButton settingsButton = createButton("", e -> frame.showSettings());
+        //Botoes
+        JButton playButton = createButton("/menu_inicial/Jogar.jpg", e -> frame.showGameModeSelection());
+        JButton rulesButton = createButton("/menu_inicial/Regras.jpg", e -> frame.showRules());
+        JButton settingsButton = createButton("/menu_inicial/Settings 1.jpg", e -> frame.showSettings());
 
         gbc.gridwidth = 1;
         gbc.gridy = 1;
