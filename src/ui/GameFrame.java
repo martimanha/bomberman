@@ -28,7 +28,7 @@ public class GameFrame extends JFrame{
         mainPanel.add(menuPanel, "Menu");
         mainPanel.add(gameModeSelectionPanel, "GameModeSelection");
         mainPanel.add(rulesPanel, "Rules");
-        mainPanel.add(SettingsPanel, "Settings");
+        mainPanel.add(settingsPanel, "Settings");
 
         add(mainPanel);
         showMenu();
