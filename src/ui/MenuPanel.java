@@ -17,9 +17,9 @@ public class MenuPanel extends JPanel{
         add(background, gbc);
 
         //Botoes
-        JButton playButton = createButton("/menu_inicial/Jogar.jpg", e -> frame.showGameModeSelection());
-        JButton rulesButton = createButton("/menu_inicial/Regras.jpg", e -> frame.showRules());
-        JButton settingsButton = createButton("/menu_inicial/Settings 1.jpg", e -> frame.showSettings());
+        JButton playButton = createButton("/menu_inicial/Jogar.png", e -> frame.showGameModeSelection());
+        JButton rulesButton = createButton("/menu_inicial/Regras.png", e -> frame.showRules());
+        JButton settingsButton = createButton("/menu_inicial/Settings 1.png", e -> frame.showSettings());
 
         gbc.gridwidth = 1;
         gbc.gridy = 1;
