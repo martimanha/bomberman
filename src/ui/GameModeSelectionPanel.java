@@ -1,5 +1,6 @@
 package src.ui;
 
+import src.logic.MapLoader;
 import javax.swing.*;
 import java.awt.*;
 
