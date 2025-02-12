@@ -1,51 +1,41 @@
 package src.logic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
 public class MapLoader {
-    private static String lastMap = "";
 
-    public static String loadRandomMap(String mode){
-        String[] mapFiles;
+    private static final List <String> NORMAL_MAPS = List.of("","","","","");
 
-        if(mode.equals("LABRINTO")){
-            mapFiles = new String[]{
-                "NormalMap1.csv",
-                "NormalMap2.csv",
-                "NormalMap3.csv",
-                "NormalMap4.csv",
-                "NormalMap5.csv",
-                "LabyrinthMap1.csv",
-                "LabyrinthMap2.csv",
-                "LabyrinthMap3.csv"
-                
-            };
-        } else{
-            mapFiles = new String[]{
-                "NormalMap1.csv",
-                "NormalMap2.csv",
-                "NormalMap3.csv",
-                "NormalMap4.csv",
-                "NormalMap5.csv"
-            };
+    private static final List <String> LABIRINTO_MAPS = List.of("","","");
+
+    private static final Random random = new Random();
+    private static String lastMAP = null; //Vai armazenar o ultimo mapa que foi carregado.
+
+    public static String loadMap(String modo) 
+    {
+        List<String> availableMaps = new ArrayList<>();
+
+        if (modo.equalsIgnoreCase("Labirinto"))
+        {
+            //No modo labirinto, vai haver mapas normais e mapas de labirinto.
+
+            availableMaps.addAll(LABIRINTO_MAPS);
+                availableMaps.addAll(NORMAL_MAPS);
         }
 
-        return selectRandomMap(mapFiles);
-    } 
+        //Remove o ultimo mapa carregado da lista de mapas disponiveis.
+        if (lastMAP != null && availableMaps.contains(lastMAP)) {
+            availableMaps.remove(lastMAP);
+        }
 
-    private static String selectRandomMap(String[] mapFiles){
-        Random random = new Random();
-        String selectedMap;
+        //Seleciona um mapa aleatorio da lista de mapas disponiveis.
+        String selectedMap = availableMaps.get(random.nextInt(availableMaps.size()));
 
-        do{
-            selectedMap = mapFiles[random.nextInt(mapFiles.length)];
-        } while(selectedMap.equals(lastMap));
-        lastMap = selectedMap;
+        //Atualiza o ultimo mapa carregado.
+        lastMAP = selectedMap;
+
         return selectedMap;
-    }
-
-    public static char[][] loadMap(String mapFile){
-
-        //alterar para ler o mapa
-        return new char[0][0];
     }
 }
