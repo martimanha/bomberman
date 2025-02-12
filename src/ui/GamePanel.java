@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable{
             }
         }
 
-        @Override
+        Override
         public void run() {
             while (true) {
                 repaint();
@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable{
             }
         }
 
-        @Override
+        Override
         public void keyPressed(KeyEvent e) {
             int key = e.getKeyCode();
             if (key == KeyEnvent.VK_W) player.move(0, -1);
@@ -71,9 +71,9 @@ public class GamePanel extends JPanel implements KeyListener, Runnable{
             if (key == KeyEvent.VK_D) player.move(1, 0);
         }
 
-        @Override
+        Override
         public void keyReleased(KeyEvent e) {}
-        @Override
+        Override
         public void keyTyped(KeyEvent e) {}
     }
 }
