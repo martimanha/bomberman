@@ -2,7 +2,6 @@ package src.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 public class MenuPanel extends JPanel{
     public MenuPanel(GameFrame frame){
@@ -33,13 +32,11 @@ public class MenuPanel extends JPanel{
         add(settingsButton, gbc);
     }
 
-    private void createButton(String imagePath, ActionListener action, GridBagConstraints gbc, int gridY){
+    private JButton createButton(String imagePath, java.awt.event.ActionListener action){
         JButton button = new JButton(new ImageIcon(getClass().getResource(imagePath)));
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.addActionListener(action);
-        gbc.gridy = gridY;
-        gbc.gridwidth = 1;
-        add(button, gbc);
+        return button;
     }
 }
