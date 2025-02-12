@@ -1,79 +1,71 @@
 package src.ui;
 
+import src.entities.*;
+import src.logic.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import src.logic.MapLoader;
-import src.entities.Player;
+import java.awt.event.*;
 
-public class GamePanel extends JPanel implements KeyListener, Runnable{
-    private Thread gameThread;
+public class GamePanel extends JPanel implements KeyListener, ActionListener {
+    private final int TILE_SIZE = 40;
+    private final int FPS = 60;
+
+    private GameFrame frame;
     private Player player;
-    private MapLoader maploader;
+    private Enemy[] enemy;
+    private Bomb[] bomb;
+    private Explosion[] explosion;
+    private PowerUps[] powerUps;
+    private Timer gameTimer;
+    private MapLoader mapLoader;
+    private CollisionManager collisionManager;
+    private PowerUpsManager powerUpsManager;
+    private AssertionLoader assertionLoader;
+    
+    public GamePanel(GameFrame frame) {
+        this.frame = frame;
+        setPreferredSize(new Dimension(800, 600));
+        setFocusable(true);
+        addKeyListener(this);
 
-    public GamePanel() {
-        this.setPreferredSize(new Dimension (800,600));
-        this.setBackground(Color.LIGHT_GRAY);
-        this.setFocusable(true);
-        this.addKeyListener(this);
-
-        mapLoader = new MapLoader(""); // ip do ficheiro necessário.
-        player =new Player(50,50);
-
-        gameThread = new Thread(this);
-        gameThread.start();
+        initializeGameComponents();
+        setupGameLoop(); 
     }
 
-    @Override
+    private void initializeGameComponents() {
+        //Carrega os recursos do jogo.
+        assetsLoader = new AssetsLoader();
+
+        //Inicializa o sistema.
+        mapLoader = new MapLoader();
+        collisionManager = new CollisionManager();
+        powerUpsManager = new PowerUpsManager();
+
+        //Carrega o mapa.
+        mapLoader.loadMap("resources/maps/NormalMap1.csv");
+
+        //inicializar o jogador.
+        player= new Player(1 * TILE_SIZE, 1 * TILE_SIZE);
+
+        //inicializar os inimigos.
+        enemies = new Enemy[3];
+        for(int i = 0; i < enemies.length; i++) {
+            enemies[i] = new Enemy(1 * TILE_SIZE, (i+3) * TILE_SIZE);
+        }
+        
+        bombs = new Bomb[10];
+        explosions = new Explosion[10];
+        powerUps = new PowerUps[5];
+    }
+
+    private void setupGameLoop() {
+        gameTimer = new Timer(1000 / FPS, this);
+        gameTimer.start();
+    }
+
+    Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        drawMap(g);
-
-        // Mostra o jogador
-        g.setColor(Color.BLUE);
-        g.fillRect(player.getX(), player,getY(), 40, 40);
-    }
-
-    private void drawMap(Graphics g) {
-        int titleSize =40;
-        char[][] mapGrid = maploader.getMap();
-
-        for (int row = 0; row < mapGrid.length; row++){
-            for (int col = 0; col < mapGrid[row].length; col++){
-                char tile = mapGrid[row][col];
-                if (tile == '#') {
-                    g.setColor(Color.DARK_GRAY);
-                    g.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
-                  } else if (tile == 'B') {
-                    g.setColor(Color.ORANGE);
-                    g.fillRect(col* tileSize, row * tileSize, tileSize, tileSize);
-                }   
-            }
-        }
-
-        Override
-        public void run() {
-            while (true) {
-                repaint();
-                try { Thread.sleep(16);}
-                catch (interruptedException e)
-                { e.printStackTrace();}
-            }
-        }
-
-        Override
-        public void keyPressed(KeyEvent e) {
-            int key = e.getKeyCode();
-            if (key == KeyEnvent.VK_W) player.move(0, -1);
-            if (key == KeyEvent.VK_S) player.move(0, 1);
-            if (key == KeyEvent.VK_A) player.move(-1, 0);
-            if (key == KeyEvent.VK_D) player.move(1, 0);
-        }
-
-        Override
-        public void keyReleased(KeyEvent e) {}
-        Override
-        public void keyTyped(KeyEvent e) {}
+        
+        
     }
 }
