@@ -10,16 +10,16 @@ public class MenuPanel extends JPanel{
         gbc.insets = new Insets(20, 20, 20, 20);
 
         //Background
-        JLabel background = new JLabel(new ImageIcon(getClass().getResource("/menu_inicial/background.jpg")));
+        JLabel background = new JLabel(new ImageIcon(getClass().getResource("/MenuPanel/background.jpg")));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         add(background, gbc);
 
         //Botoes
-        JButton playButton = createButton("/menu_inicial/Jogar.png", e -> frame.showGameModeSelection());
-        JButton rulesButton = createButton("/menu_inicial/Regras.png", e -> frame.showRules());
-        JButton settingsButton = createButton("/menu_inicial/Settings 1.png", e -> frame.showSettings());
+        JButton playButton = createButton("/MenuPanel/Jogar.png", e -> frame.showGameModeSelection());
+        JButton rulesButton = createButton("/MenuPanel/Regras.png", e -> frame.showRules());
+        JButton settingsButton = createButton("/MenuPanel/Settings 1.png", e -> frame.showSettings());
 
         gbc.gridwidth = 1;
         gbc.gridy = 1;

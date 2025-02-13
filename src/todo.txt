@@ -4,7 +4,7 @@ Modos de jogo:
 
 (1) Normal - O jogador tem 3 vidas, o objetivo é matar os inimigos e conseguir escapar do mapa.
 (2) Labirinto - A visibilidade do jogador é reduzida, não há inimigos e o objetivo é conseguir escapar do mapa. 
-(3) Temporizado - O jogador tem 3 vidas, inimigos voltam a aparecer e os blocos que se parte com as bombas voltam a regenerar-se e o objetivo é sobreviver num certo tempo (3 a 5 minutos, ainda a decidir)
+(3) Temporizado - O jogador tem 3 vidas, inimigos voltam a aparecer e os blocos que se parte com as bombas voltam a regenerar-se e o objetivo é sobreviver num certo tempo.
 (4) Difícil - Junção dos 3 modos de jogo. O jogador não tem vidas (1 vida), o jogador tem 3 minutos para poder escapar do mapa, tem visão reduzida, os blocos que se pode partir voltam a regenerar-se e há mais inimigos.
 
 Modo de geração de mapas:
@@ -45,3 +45,10 @@ Escapa do mapa -> 100 pontos
 Opções (EXTREMAMENTE OPCIONAL):
 
 Menu incial em que se pode adicionar definições, como mudar o idioma/volume, um botão que explica como se joga.
+
+
+
+
+TEXTO PARA REGRAS:
+
+Bomberman basea-se em escapar do níveis, vários inimogos estarão no mapa e tens que matá-los e ao destruires uma caixa tens a chance de conseguir um PowerUp, alguns melhores que os outros. Certos modos de jogos têm os seus modificadores, alguns têm os seus PowerUps especiais.
