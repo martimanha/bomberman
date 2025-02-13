@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Bomberman",
+            "request": "launch",
+            "mainClass": "src.main.Launcher",
+            "projectName": "BombermanGame",
+            "classPaths": [
+                "out",
+                "resources"
+            ],
+            "args": "",
+            "preLaunchTask": "build"
+        }
+    ]
+}

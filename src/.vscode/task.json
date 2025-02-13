@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d", "out",
+                "-sourcepath", "src",
+                "-cp", "resources",
+                "src/main/Launcher.java",
+                "src/ui/*.java",
+                "src/entities/*.java",
+                "src/logic/*.java"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
