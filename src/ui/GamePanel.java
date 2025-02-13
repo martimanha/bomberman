@@ -1,5 +1,5 @@
+package src.ui;
 
-<<<<<<< Updated upstream
 import src.entities.Player;
 import src.logic.MapLoader;
 import javax.swing.*;
@@ -76,5 +76,3 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     @Override public void keyTyped(KeyEvent e) {}
     @Override public void keyReleased(KeyEvent e) {}
 }
-=======
->>>>>>> Stashed changes
