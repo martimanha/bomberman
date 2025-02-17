@@ -10,7 +10,7 @@ public class RulesPanel extends JPanel{
         gbc.insets = new Insets(20, 20, 20, 20);
 
         //Titulo
-        JLabel title = new JLabel(new ImageIcon(getClass().getResource(""))); //SUBSTITUIR PELO RESPETIVO FICHEIRO
+        JLabel title = new JLabel(new ImageIcon(getClass().getResource("/src/resources/RulesPanel/regrasLabel.png"))); //SUBSTITUIR PELO RESPETIVO FICHEIRO
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(title, gbc);

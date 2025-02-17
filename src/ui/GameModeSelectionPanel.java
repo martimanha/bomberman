@@ -17,7 +17,7 @@ public class GameModeSelectionPanel extends JPanel{
         add(title, gbc);
 
         //Modos de jogo
-        String[] modes = {"", "", "", ""}; //SUBSTITUIR PELOS RESPETIVOS FICHEIROS
+        String[] modes = {"/src/resources/GameModeSelectionPanel/normalButton.png", "/src/resources/GameModeSelectionPanel/temporizadoButton.png", "/src/resources/GameModeSelectionPanel/labirintoButton.png", "/src/resources/GameModeSelectionPanel/dificilButton.png"};
         for(int i=0; i < modes.length; i++){
             JButton modeButton = createButton(modes[i], null);
             gbc.gridy++;
@@ -26,8 +26,8 @@ public class GameModeSelectionPanel extends JPanel{
 
         //BOTOES INFERIORES
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        JButton backButton = createButton("", e -> frame.showMenu()); //SUBSTITUIR PELO RESPETIVO FICHEIRO
-        JButton playButton = createButton("", e -> iniciarJogo(frame)); //SUBSTITUIR PELO RESPETIVO FICHEIRO
+        JButton backButton = createButton("/src/resources/GameModeSelectionPanel/voltarButton.png", e -> frame.showMenu()); //SUBSTITUIR PELO RESPETIVO FICHEIRO
+        JButton playButton = createButton("/src/resources/GameModeSelectionPanel/playButton.png", e -> iniciarJogo(frame)); //SUBSTITUIR PELO RESPETIVO FICHEIRO
 
         bottomPanel.add(backButton);
         bottomPanel.add(playButton);

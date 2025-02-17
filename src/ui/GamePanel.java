@@ -23,7 +23,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private void initializeGame() {
         assetsLoader = new AssetsLoader();
         mapLoader = new MapLoader();
-        mapLoader.loadMap("resources/maps/NormalMap1.csv");
+        mapLoader.loadMap("/src/resources/Maps/");
         player = new Player(1 * TILE_SIZE, 1 * TILE_SIZE);
         gameTimer = new Timer(1000/60, this);
         gameTimer.start();
