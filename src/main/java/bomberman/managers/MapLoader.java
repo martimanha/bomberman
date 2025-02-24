@@ -29,7 +29,7 @@ public class MapLoader {
     }
 
     private static boolean isValidSpecialTile(int x, int y, char[][] map, int playerX, int playerY) {
-        // Verificar se está em qualquer borda (exceto cantos)
+        // 1. Verificar bordas excluindo cantos
         boolean isEdge = (x == 0 || x == MAP_COLS-1 || y == 0 || y == MAP_ROWS-1);
         boolean isCorner = (x == 0 && y == 0) ||
                 (x == 0 && y == MAP_ROWS-1) ||
@@ -37,15 +37,16 @@ public class MapLoader {
                 (x == MAP_COLS-1 && y == MAP_ROWS-1);
         if (!isEdge || isCorner) return false;
 
-        // Distância mínima de 3 tiles do jogador
-        if (Math.abs(x - playerX) < 3 || Math.abs(y - playerY) < 3) return false;
+        // 2. Distância mínima de 4 tiles do jogador
+        if (Math.abs(x - playerX) < 4 || Math.abs(y - playerY) < 4) return false;
 
-        // Verificar parede oposta conforme especificado
-        if (x == 0 && map[y][x+1] != 'H') return false;          // Esquerda
-        if (x == MAP_COLS-1 && map[y][x-1] != 'H') return false; // Direita
-        if (y == 0 && map[y+1][x] != 'H') return false;          // Topo
-        if (y == MAP_ROWS-1 && map[y-1][x] != 'H') return false; // Base
+        // 3. Verificar parede DESTRUTÍVEL (B) do lado oposto
+        if (x == 0 && map[y][x+1] != 'B') return false;          // Esquerda
+        if (x == MAP_COLS-1 && map[y][x-1] != 'B') return false; // Direita
+        if (y == 0 && map[y+1][x] != 'B') return false;          // Topo
+        if (y == MAP_ROWS-1 && map[y-1][x] != 'B') return false; // Base
 
+        // 4. Só gerar em paredes indestrutíveis (H)
         return map[y][x] == 'H';
     }
 
@@ -53,7 +54,7 @@ public class MapLoader {
         List<int[]> validPositions = new ArrayList<>();
         Random rand = new Random();
 
-        // Coletar todas as posições válidas
+        // Coletar posições válidas
         for (int y = 0; y < MAP_ROWS; y++) {
             for (int x = 0; x < MAP_COLS; x++) {
                 if (isValidSpecialTile(x, y, map, playerX, playerY)) {
@@ -62,7 +63,6 @@ public class MapLoader {
             }
         }
 
-        // Tentar colocar em posição válida
         if (!validPositions.isEmpty()) {
             int[] pos = validPositions.get(rand.nextInt(validPositions.size()));
             map[pos[1]][pos[0]] = 'S';
@@ -72,7 +72,7 @@ public class MapLoader {
     }
 
     private static void createForcedPath(char[][] map, int startX, int startY) {
-        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}}; // Direções prioritárias
+        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
 
         for (int[] dir : directions) {
             int x = startX;
@@ -83,20 +83,24 @@ public class MapLoader {
                 x += dir[0];
                 y += dir[1];
 
-                // Verificar se saiu do mapa
                 if (x < 0 || x >= MAP_COLS || y < 0 || y >= MAP_ROWS) {
+                    // Colocar 'S' na última posição válida
                     if (!path.isEmpty()) {
-                        // Colocar 'S' no último tile válido com verificação
                         int[] lastPos = path.get(path.size()-1);
-                        if (isValidSpecialTile(lastPos[0], lastPos[1], map, startX, startY)) {
-                            map[lastPos[1]][lastPos[0]] = 'S';
+                        map[lastPos[1]][lastPos[0]] = 'S';
+                        // Garantir parede destrutível oposta
+                        int oppositeX = lastPos[0] - dir[0];
+                        int oppositeY = lastPos[1] - dir[1];
+                        if (oppositeX >= 0 && oppositeX < MAP_COLS &&
+                                oppositeY >= 0 && oppositeY < MAP_ROWS) {
+                            map[oppositeY][oppositeX] = 'B';
                         }
                     }
                     return;
                 }
 
-                // Quebrar paredes se necessário
-                if (map[y][x] == 'H') map[y][x] = 'V';
+                // Converter paredes indestrutíveis em destrutíveis
+                if (map[y][x] == 'H') map[y][x] = 'B';
                 path.add(new int[]{x, y});
             }
         }
@@ -121,7 +125,7 @@ public class MapLoader {
                 if (newX >= 0 && newX < MAP_COLS &&
                         newY >= 0 && newY < MAP_ROWS &&
                         !visited[newY][newX] &&
-                        map[newY][newX] != 'H') {
+                        map[newY][newX] != 'H') { // Considerar apenas paredes destrutíveis como caminho válido
 
                     visited[newY][newX] = true;
                     queue.add(new int[]{newX, newY});
@@ -146,7 +150,7 @@ public class MapLoader {
 
             if (!isBorder(x, y)) {
                 if (map[y][x] == 'H') {
-                    map[y][x] = 'V';
+                    map[y][x] = 'B'; // Converter para destrutível
                 }
                 return;
             }
@@ -158,7 +162,7 @@ public class MapLoader {
                 if (newX >= 0 && newX < MAP_COLS &&
                         newY >= 0 && newY < MAP_ROWS &&
                         !visited[newY][newX] &&
-                        map[newY][newX] != 'H') {
+                        map[newY][newX] != 'H') { // Ignorar paredes indestrutíveis
 
                     visited[newY][newX] = true;
                     queue.add(new int[]{newX, newY});
