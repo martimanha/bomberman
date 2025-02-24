@@ -26,17 +26,18 @@ public class GameOverState {
 
     private void createButtons() {
         int buttonWidth = 200;
-        int buttonSpacing = -30;
+        int buttonSpacing = 30;
         int totalWidth = buttonWidth * 2 + buttonSpacing;
 
-        int startX = (SCREEN_WIDTH - totalWidth) / 2 + 50;
-        int buttonY = (int) (SCREEN_HEIGHT * 0.6);
+        int startX = (SCREEN_WIDTH - totalWidth) / 2;
+        int buttonY = (int) (SCREEN_HEIGHT * 0.7);
 
         retryButton = new Button(
                 "gameOver_menu/retry.png",
                 "gameOver_menu/retry_hover.png",
                 startX, buttonY
         );
+
         exitButton = new Button(
                 "gameOver_menu/exit.png",
                 "gameOver_menu/exit_hover.png",
@@ -53,16 +54,19 @@ public class GameOverState {
         if (retryButton.isClicked(e)) {
             isActive = false;
         } else if (exitButton.isClicked(e)) {
-            isActive = false;
+            System.exit(0);
         }
     }
 
     public void render(Graphics2D g2) {
         if (background != null) {
+            // Centralizar a imagem de fundo
             int bgX = (SCREEN_WIDTH - background.getWidth()) / 2;
-            int bgY = (SCREEN_HEIGHT - background.getHeight()) / 2;
+            int bgY = (SCREEN_HEIGHT - background.getHeight()) / 3;
             g2.drawImage(background, bgX, bgY, null);
         }
+
+        // Renderizar botões
         retryButton.render(g2);
         exitButton.render(g2);
     }
@@ -77,6 +81,11 @@ public class GameOverState {
 
     public void deactivate() {
         isActive = false;
+    }
+
+    // Novos getters para os botões
+    public Button getRetryButton() {
+        return retryButton;
     }
 
     public Button getExitButton() {

@@ -4,6 +4,7 @@ import bomberman.managers.CollisionManager;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import static bomberman.GameConstants.*;
 
 public class Bomb {
@@ -12,12 +13,17 @@ public class Bomb {
     private final int power;
     private long placedTime;
     private boolean exploded = false;
+    private transient List<Explosion> explosions; // Referência à lista de explosões do GamePanel
 
     public Bomb(int xTile, int yTile, int power) {
         this.xTile = xTile;
         this.yTile = yTile;
         this.power = power;
         this.placedTime = System.currentTimeMillis();
+    }
+
+    public void setExplosionsList(List<Explosion> explosions) {
+        this.explosions = explosions;
     }
 
     public void update() {
@@ -27,12 +33,16 @@ public class Bomb {
     }
 
     private void explode() {
-        Explosion tempExplosion = new Explosion(xTile, yTile, power);
-        tempExplosion.getSegments().forEach(segment -> {
+        Explosion newExplosion = new Explosion(xTile, yTile, power);
+        newExplosion.getSegments().forEach(segment -> {
             int x = segment[0];
             int y = segment[1];
             CollisionManager.destroyBlock(x, y);
         });
+
+        if (explosions != null) {
+            explosions.add(newExplosion);
+        }
         exploded = true;
     }
 

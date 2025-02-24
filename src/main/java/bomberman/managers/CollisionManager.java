@@ -2,9 +2,10 @@ package bomberman.managers;
 
 import bomberman.entities.Bomb;
 import bomberman.entities.Enemy;
+import bomberman.entities.Explosion;
 import bomberman.powerups.PowerUp;
-import java.util.List;
 import bomberman.powerups.PowerUpType;
+import java.util.List;
 import static bomberman.GameConstants.*;
 
 public class CollisionManager {
@@ -21,7 +22,7 @@ public class CollisionManager {
     public static boolean canMoveTo(int xTile, int yTile) {
         if (isOutOfBounds(xTile, yTile)) return false;
         if (isSolidBlock(xTile, yTile)) return false;
-        return !isBombAtPosition(xTile, yTile);
+        return !isBombAtPosition(xTile, yTile) && !checkExplosionCollision(xTile, yTile);
     }
 
     public static boolean canEnemyMoveTo(int xTile, int yTile, List<Enemy> enemies) {
@@ -38,7 +39,13 @@ public class CollisionManager {
     }
 
     public static boolean checkExplosionCollision(int xTile, int yTile) {
-        return !isOutOfBounds(xTile, yTile) && map[yTile][xTile] == 'E';
+        return bombs.stream()
+                .filter(Bomb::hasExploded)
+                .anyMatch(b -> {
+                    Explosion explosion = new Explosion(b.getXTile(), b.getYTile(), b.getPower());
+                    return explosion.getSegments().stream()
+                            .anyMatch(seg -> seg[0] == xTile && seg[1] == yTile);
+                });
     }
 
     public static char[][] getMap() {
@@ -49,11 +56,10 @@ public class CollisionManager {
         return x < 0 || x >= MAP_COLS || y < 0 || y >= MAP_ROWS;
     }
 
-    //private static boolean isSolidBlock(int x, int y)   return map[y][x] == 'H' || map[y][x] == 'B' || map.[y][x] == 'S';}
     public static boolean isSolidBlock(int x, int y) {
-        if (isOutOfBounds(x, y)) return false; // Verifica se está fora dos limites
+        if (isOutOfBounds(x, y)) return true;
         char tile = map[y][x];
-        return tile == 'H' || tile == 'B'; // Retorna verdadeiro se o bloco for sólido
+        return tile == 'H' || tile == 'B';
     }
 
     private static boolean isBombAtPosition(int x, int y) {

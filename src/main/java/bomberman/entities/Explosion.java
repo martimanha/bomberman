@@ -20,7 +20,6 @@ public class Explosion {
         this.startTime = System.currentTimeMillis();
         this.power = power;
         createExplosionPattern(centerX, centerY);
-        markExplosionOnMap();
     }
 
     private void createExplosionPattern(int centerX, int centerY) {
@@ -56,16 +55,6 @@ public class Explosion {
 
     private void addValidSegment(int x, int y) {
         segments.add(new int[]{x, y});
-    }
-
-    private void markExplosionOnMap() {
-        segments.forEach(segment -> {
-            int x = segment[0];
-            int y = segment[1];
-            if (CollisionManager.getMap()[y][x] != 'H') {
-                CollisionManager.getMap()[y][x] = 'E';
-            }
-        });
     }
 
     public void draw(Graphics2D g2) {

@@ -19,6 +19,7 @@ public class Player {
     private long lastBombTime;
     private Direction currentDirection;
     private final StatusManager statusManager;
+    private boolean isAlive = true;
 
     public enum Direction {
         UP(0, -1),
@@ -43,7 +44,6 @@ public class Player {
         this.currentDirection = Direction.RIGHT;
         this.statusManager = statusManager;
         this.lastBombTime = 0;
-
         loadSprites();
     }
 
@@ -55,12 +55,12 @@ public class Player {
     }
 
     public void move(Direction dir) {
-        if (isMoving || isInvulnerable) return;
+        if (isMoving || isInvulnerable || !isAlive) return;
 
         int newX = targetXTile + dir.xOffset;
         int newY = targetYTile + dir.yOffset;
 
-        if (CollisionManager.canMoveTo(newX, newY)) {
+        if (CollisionManager.canMoveTo(newX, newY) && !isInExplosion(newX, newY)) {
             targetXTile = newX;
             targetYTile = newY;
             currentDirection = dir;
@@ -68,7 +68,19 @@ public class Player {
         }
     }
 
+    private boolean isInExplosion(int x, int y) {
+        return CollisionManager.checkExplosionCollision(x, y);
+    }
+
     public void update() {
+        if (!isAlive) return;
+
+        updatePosition();
+        checkExplosionCollision();
+        updateInvulnerability();
+    }
+
+    private void updatePosition() {
         if (isMoving) {
             double speed = PLAYER_BASE_SPEED * statusManager.getSpeedMultiplier();
             double targetX = targetXTile * TILE_SIZE;
@@ -83,16 +95,28 @@ public class Player {
                 isMoving = false;
             }
         }
+    }
 
+    private void checkExplosionCollision() {
+        if (!isInvulnerable && CollisionManager.checkExplosionCollision(targetXTile, targetYTile)) {
+            takeDamage();
+        }
+    }
+
+    private void updateInvulnerability() {
         if (isInvulnerable && System.currentTimeMillis() - damageTime > PLAYER_INVULNERABILITY_DURATION) {
             isInvulnerable = false;
         }
     }
 
     public void takeDamage() {
-        if (!isInvulnerable) {
+        if (!isInvulnerable && isAlive) {
             statusManager.loseLife();
             activateInvulnerability();
+
+            if (statusManager.getLives() <= 0) {
+                isAlive = false;
+            }
         }
     }
 
@@ -109,16 +133,19 @@ public class Player {
         this.isMoving = false;
         this.isInvulnerable = false;
         this.currentDirection = Direction.RIGHT;
-        this.statusManager.reset(); // Alteração crítica para reset de velocidade
+        this.isAlive = true;
+        this.statusManager.reset();
     }
 
     public void draw(Graphics2D g2) {
-        if (isInvulnerable) {
-            if ((System.currentTimeMillis() / 200) % 2 == 0) {
+        if (isAlive) {
+            if (isInvulnerable) {
+                if ((System.currentTimeMillis() / 200) % 2 == 0) {
+                    drawSprite(g2);
+                }
+            } else {
                 drawSprite(g2);
             }
-        } else {
-            drawSprite(g2);
         }
     }
 
@@ -132,7 +159,7 @@ public class Player {
     public int getYTile() { return targetYTile; }
     public long getLastBombTime() { return lastBombTime; }
     public void setLastBombTime(long time) { this.lastBombTime = time; }
-    public boolean isAlive() { return statusManager.isAlive(); }
+    public boolean isAlive() { return isAlive; }
     public Direction getCurrentDirection() { return currentDirection; }
     public StatusManager getStatusManager() { return statusManager; }
 }

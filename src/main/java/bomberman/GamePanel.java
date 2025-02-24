@@ -4,7 +4,10 @@ import bomberman.entities.*;
 import bomberman.managers.*;
 import bomberman.powerups.PowerUp;
 import bomberman.rendering.*;
-import bomberman.ui.*;
+import bomberman.ui.GameOverState;
+import bomberman.ui.MainMenuState;
+import bomberman.ui.RulesMenuState;
+import bomberman.ui.GameSelectionMenuState;
 import bomberman.utils.SpriteLoader;
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +15,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static bomberman.GameConstants.*;
 
@@ -24,7 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final MainMenuState mainMenuState;
     private final GameSelectionMenuState gameSelectionState;
     private final RulesMenuState rulesMenuState;
-    private final bomberman.ui.GameOverState gameOverState; // Referência explícita
+    private final bomberman.ui.GameOverState gameOverState;
 
     // Entidades do jogo
     private Player player;
@@ -33,11 +37,12 @@ public class GamePanel extends JPanel implements Runnable {
     private List<Explosion> explosions;
     private List<PowerUp> powerUps;
 
-    // Gerenciadores e recursos
-    private char[][] gameMap;
+    // Gerenciadores
     private final MapManager mapManager;
+    private char[][] gameMap;
     private final BufferedImage[] blockSprites = new BufferedImage[2];
     private BufferedImage floorSprite;
+    private String currentMapFile;
 
     public GamePanel() {
         setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -45,16 +50,17 @@ public class GamePanel extends JPanel implements Runnable {
 
         inputKey = new InputKey();
         mapManager = new MapManager();
+        currentMapFile = mapManager.getRandomMap();
 
-        // Inicializar estados da UI
+        // Inicializar estados UI
         mainMenuState = new MainMenuState();
         gameSelectionState = new GameSelectionMenuState(mainMenuState);
         rulesMenuState = new RulesMenuState();
-        gameOverState = new bomberman.ui.GameOverState(); // Instância explícita
+        gameOverState = new bomberman.ui.GameOverState();
 
+        initializeGame(currentMapFile);
         setupInputHandling();
         loadSprites();
-        initializeGame(mapManager.getRandomMap());
     }
 
     private void setupInputHandling() {
@@ -74,30 +80,6 @@ public class GamePanel extends JPanel implements Runnable {
         });
 
         setFocusable(true);
-    }
-
-    private void handleUIInteraction(MouseEvent e) {
-        if (mainMenuState.isActive()) {
-            mainMenuState.handleClick(e, rulesMenuState, gameSelectionState);
-        } else if (gameSelectionState.isActive()) {
-            gameSelectionState.handleClick(e);
-        } else if (rulesMenuState.isActive()) {
-            rulesMenuState.handleClick(e);
-        } else if (gameOverState.isActive()) {
-            gameOverState.handleClick(e);
-        }
-    }
-
-    private void updateUIHoverStates(Point mousePos) {
-        if (mainMenuState.isActive()) {
-            mainMenuState.handleMouseMove(mousePos);
-        } else if (gameSelectionState.isActive()) {
-            gameSelectionState.handleMouseMove(mousePos);
-        } else if (rulesMenuState.isActive()) {
-            rulesMenuState.handleMouseMove(mousePos);
-        } else if (gameOverState.isActive()) {
-            gameOverState.handleMouseMove(mousePos);
-        }
     }
 
     private void initializeGame(String mapFile) {
@@ -129,10 +111,9 @@ public class GamePanel extends JPanel implements Runnable {
         double interval = 1000000000.0 / 60;
         double delta = 0;
         long lastTime = System.nanoTime();
-        long currentTime;
 
         while (isRunning) {
-            currentTime = System.nanoTime();
+            long currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / interval;
             lastTime = currentTime;
 
@@ -155,6 +136,10 @@ public class GamePanel extends JPanel implements Runnable {
             updatePowerUps();
             checkCollisions();
         }
+
+        if (!player.isAlive() && !gameOverState.isActive()) {
+            triggerGameOver();
+        }
     }
 
     private boolean shouldUpdateGame() {
@@ -162,12 +147,6 @@ public class GamePanel extends JPanel implements Runnable {
                 && !gameSelectionState.isActive()
                 && !rulesMenuState.isActive()
                 && !gameOverState.isActive();
-    }
-
-    private void checkLevelTransition() {
-        if (gameMap[player.getYTile()][player.getXTile()] == 'S') {
-            resetGame();
-        }
     }
 
     private void handleInput() {
@@ -184,9 +163,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void updatePlayer() {
         player.update();
-        if (!player.isAlive()) {
-            triggerGameOver();
-        }
     }
 
     private void updateEnemies() {
@@ -195,8 +171,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void updateBombs() {
+        bombs.forEach(bomb -> {
+            bomb.setExplosionsList(explosions);
+            bomb.update();
+        });
         bombs.removeIf(Bomb::hasExploded);
-        bombs.forEach(Bomb::update);
     }
 
     private void updateExplosions() {
@@ -221,9 +200,9 @@ public class GamePanel extends JPanel implements Runnable {
     private void checkEnemyCollision() {
         enemies.stream()
                 .filter(Enemy::isAlive)
-                .filter(enemy -> enemy.getXTile() == player.getXTile() && enemy.getYTile() == player.getYTile())
+                .filter(e -> e.getXTile() == player.getXTile() && e.getYTile() == player.getYTile())
                 .findFirst()
-                .ifPresent(enemy -> player.takeDamage());
+                .ifPresent(e -> player.takeDamage());
     }
 
     private void placeBomb() {
@@ -232,11 +211,20 @@ public class GamePanel extends JPanel implements Runnable {
         int x = player.getXTile();
         int y = player.getYTile();
 
-        boolean canPlace = bombs.stream().noneMatch(b -> b.getXTile() == x && b.getYTile() == y);
+        boolean canPlace = bombs.stream()
+                .noneMatch(b -> b.getXTile() == x && b.getYTile() == y);
 
         if (canPlace) {
-            bombs.add(new Bomb(x, y, player.getStatusManager().getBombPower()));
+            Bomb newBomb = new Bomb(x, y, player.getStatusManager().getBombPower());
+            newBomb.setExplosionsList(explosions);
+            bombs.add(newBomb);
             player.setLastBombTime(System.currentTimeMillis());
+        }
+    }
+
+    private void checkLevelTransition() {
+        if (gameMap[player.getYTile()][player.getXTile()] == 'S') {
+            resetGame();
         }
     }
 
@@ -246,20 +234,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void resetGame() {
-        isRunning = false;
-        try {
-            if (gameThread != null) {
-                gameThread.join();
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        initializeGame(mapManager.getRandomMap());
+        currentMapFile = mapManager.getRandomMap();
+        initializeGame(currentMapFile);
         loadSprites();
+        gameOverState.deactivate();
         isRunning = true;
-        gameThread = new Thread(this);
-        gameThread.start();
     }
 
     @Override
@@ -293,7 +272,49 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (rulesMenuState.isActive()) {
             rulesMenuState.render(g2);
         } else if (gameOverState.isActive()) {
-            gameOverState.render(g2);
+            renderGameOverOverlay(g2);
+        }
+    }
+
+    private void renderGameOverOverlay(Graphics2D g2) {
+        // Fundo semi-transparente
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        // Elementos do Game Over
+        gameOverState.render(g2);
+    }
+
+    private void handleUIInteraction(MouseEvent e) {
+        if (mainMenuState.isActive()) {
+            mainMenuState.handleClick(e, rulesMenuState, gameSelectionState);
+        } else if (gameSelectionState.isActive()) {
+            gameSelectionState.handleClick(e);
+        } else if (rulesMenuState.isActive()) {
+            rulesMenuState.handleClick(e);
+        } else if (gameOverState.isActive()) {
+            handleGameOverClick(e);
+        }
+    }
+
+    private void handleGameOverClick(MouseEvent e) {
+        if (gameOverState.getRetryButton().isClicked(e)) {
+            resetGame();
+        } else if (gameOverState.getExitButton().isClicked(e)) {
+            mainMenuState.setActive(true);
+            gameOverState.deactivate();
+        }
+    }
+
+    private void updateUIHoverStates(Point mousePos) {
+        if (mainMenuState.isActive()) {
+            mainMenuState.handleMouseMove(mousePos);
+        } else if (gameSelectionState.isActive()) {
+            gameSelectionState.handleMouseMove(mousePos);
+        } else if (rulesMenuState.isActive()) {
+            rulesMenuState.handleMouseMove(mousePos);
+        } else if (gameOverState.isActive()) {
+            gameOverState.handleMouseMove(mousePos);
         }
     }
 

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import static bomberman.GameConstants.TILE_SIZE;
 
 public class MapRenderer {
+
     public static void render(Graphics2D g2, char[][] map,
                               BufferedImage floorSprite, BufferedImage[] blockSprites) {
         for (int y = 0; y < map.length; y++) {
@@ -19,27 +20,17 @@ public class MapRenderer {
         int posX = x * TILE_SIZE;
         int posY = y * TILE_SIZE;
 
-        // Desenhar floor primeiro
+        // Renderizar chão primeiro
         g2.drawImage(floorSprite, posX, posY, TILE_SIZE, TILE_SIZE, null);
 
-        // Desenhar blocos por cima
-        switch (tile) {
-            case 'H':
+        // Renderizar blocos por cima
+        switch(tile) {
+            case 'H': // Parede indestrutível
                 g2.drawImage(blockSprites[0], posX, posY, TILE_SIZE, TILE_SIZE, null);
                 break;
-            case 'B':
-                g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
-                break;
-            case 'S':
-                g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
-        }
 
-        switch (tile) {
-            case 'H':
-                g2.drawImage(blockSprites[0], posX, posY, TILE_SIZE, TILE_SIZE, null);
-                break;
-            case 'B':
-            case 'S':
+            case 'B': // Parede destrutível
+            case 'S': // Bloco especial (mesmo sprite que destrutível)
                 g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
                 break;
         }
