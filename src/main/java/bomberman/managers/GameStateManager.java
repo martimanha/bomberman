@@ -1,0 +1,84 @@
+package bomberman.managers;
+
+import bomberman.entities.Bomb;
+import bomberman.entities.Enemy;
+import bomberman.entities.Explosion;
+import bomberman.entities.Player;
+import java.util.List;
+
+public class GameStateManager {
+    private final List<Enemy> enemies;
+    private final List<Bomb> bombs;
+    private final List<Explosion> explosions;
+    private final Player player;
+    private char[][] gameMap;
+    private final StatusManager statusManager;
+
+    public GameStateManager(List<Enemy> enemies, List<Bomb> bombs,
+                            List<Explosion> explosions, Player player) {
+        this.enemies = enemies;
+        this.bombs = bombs;
+        this.explosions = explosions;
+        this.player = player;
+        this.statusManager = player.getStatusManager();
+    }
+
+    public void resetGameState() {
+        // Limpa todas as entidades
+        enemies.clear();
+        bombs.clear();
+        explosions.clear();
+
+        // Recarrega o mapa do arquivo
+        MapLoader.LoadResult result = MapLoader.loadMap("/maps/level1.csv");
+        this.gameMap = result.map;
+        this.enemies.addAll(result.enemies);
+
+        // Reseta a posição do jogador
+        player.resetPosition(result.playerX, result.playerY);
+
+        // Reseta os status do jogador
+        statusManager.reset();
+    }
+
+    public void updateGameState() {
+        updateEnemies();
+        updateBombs();
+        updateExplosions();
+        checkPlayerStatus();
+    }
+
+    private void updateEnemies() {
+        enemies.removeIf(enemy -> !enemy.isAlive());
+        enemies.forEach(enemy -> enemy.update(player));
+    }
+
+    private void updateBombs() {
+        bombs.removeIf(Bomb::hasExploded);
+    }
+
+    private void updateExplosions() {
+        explosions.removeIf(explosion -> {
+            if (explosion.isFinished()) {
+                explosion.getSegments().forEach(segment -> {
+                    int x = segment[0];
+                    int y = segment[1];
+                    if (gameMap[y][x] == 'E') gameMap[y][x] = 'V';
+                });
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void checkPlayerStatus() {
+        if (!statusManager.isAlive()) {
+            // O tratamento real do game over é feito externamente
+        }
+    }
+
+    // Getter para acesso ao mapa
+    public char[][] getGameMap() {
+        return gameMap;
+    }
+}
