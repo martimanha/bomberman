@@ -29,20 +29,24 @@ public class MapLoader {
     }
 
     private static boolean isValidSpecialTile(int x, int y, char[][] map, int playerX, int playerY) {
-        // Verificar se está nas bordas excluindo cantos
+        // Verificar bordas excluindo cantos
         boolean isBorder = x == 0 || x == MAP_COLS - 1 || y == 0 || y == MAP_ROWS - 1;
         boolean isForbiddenCorner = (x == 0 && y == 0) || (x == MAP_COLS - 1 && y == 0) ||
                 (x == 0 && y == MAP_ROWS - 1) || (x == MAP_COLS - 1 && y == MAP_ROWS - 1);
         if (!isBorder || isForbiddenCorner) return false;
 
-        // Distância mínima do jogador
+        // Distância mínima de 5 tiles do jogador
         if (Math.abs(x - playerX) < 5 || Math.abs(y - playerY) < 5) return false;
 
-        // Verificar parede oposta
-        if (x == 0 && map[y][x + 1] != 'H') return false;          // Esquerda
-        if (x == MAP_COLS - 1 && map[y][x - 1] != 'H') return false; // Direita
-        if (y == 0 && map[y + 1][x] != 'H') return false;          // Topo
-        if (y == MAP_ROWS - 1 && map[y - 1][x] != 'H') return false; // Base
+        // Verificar parede oposta específica para cada borda
+        switch (x) {
+            case 0: if (map[y][x+1] != 'H') return false; break;          // Borda esquerda
+            case MAP_COLS-1: if (map[y][x-1] != 'H') return false; break; // Borda direita
+        }
+        switch (y) {
+            case 0: if (map[y+1][x] != 'H') return false; break;          // Borda superior
+            case MAP_ROWS-1: if (map[y-1][x] != 'H') return false; break; // Borda inferior
+        }
 
         return map[y][x] == 'H';
     }
@@ -51,7 +55,7 @@ public class MapLoader {
         List<int[]> validPositions = new ArrayList<>();
         Random rand = new Random();
 
-        // Coletar posições válidas
+        // Coletar todas as posições válidas
         for (int y = 0; y < MAP_ROWS; y++) {
             for (int x = 0; x < MAP_COLS; x++) {
                 if (isValidSpecialTile(x, y, map, playerX, playerY)) {
@@ -60,20 +64,41 @@ public class MapLoader {
             }
         }
 
-        // Verificar acessibilidade
-        List<int[]> accessiblePositions = new ArrayList<>();
-        for (int[] pos : validPositions) {
-            if (hasPathToS(map, playerX, playerY, pos[0], pos[1])) {
-                accessiblePositions.add(pos);
-            }
-        }
-
-        // Selecionar posição ou criar caminho
-        if (!accessiblePositions.isEmpty()) {
-            int[] pos = accessiblePositions.get(rand.nextInt(accessiblePositions.size()));
+        // Tentar colocar em posição válida
+        if (!validPositions.isEmpty()) {
+            int[] pos = validPositions.get(rand.nextInt(validPositions.size()));
             map[pos[1]][pos[0]] = 'S';
         } else {
             createGuaranteedPath(map, playerX, playerY);
+        }
+    }
+
+    private static void createGuaranteedPath(char[][] map, int playerX, int playerY) {
+        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}}; // Direita, Baixo, Esquerda, Cima
+
+        for (int[] dir : directions) {
+            int x = playerX;
+            int y = playerY;
+            List<int[]> path = new ArrayList<>();
+
+            while (true) {
+                x += dir[0];
+                y += dir[1];
+
+                if (x < 0 || x >= MAP_COLS || y < 0 || y >= MAP_ROWS) {
+                    // Atingiu a borda - colocar 'S' no último tile válido
+                    if (!path.isEmpty()) {
+                        int[] lastValid = path.get(path.size() - 1);
+                        map[lastValid[1]][lastValid[0]] = 'S';
+                    }
+                    return;
+                }
+
+                if (map[y][x] == 'H') {
+                    map[y][x] = 'V'; // Quebrar parede
+                }
+                path.add(new int[]{x, y});
+            }
         }
     }
 
@@ -93,37 +118,17 @@ public class MapLoader {
                 int newX = current[0] + dir[0];
                 int newY = current[1] + dir[1];
 
-                if (newX >= 0 && newX < MAP_COLS && newY >= 0 && newY < MAP_ROWS &&
-                        !visited[newY][newX] && map[newY][newX] != 'H') {
+                if (newX >= 0 && newX < MAP_COLS &&
+                        newY >= 0 && newY < MAP_ROWS &&
+                        !visited[newY][newX] &&
+                        map[newY][newX] != 'H') {
+
                     visited[newY][newX] = true;
                     queue.add(new int[]{newX, newY});
                 }
             }
         }
         return false;
-    }
-
-    private static void createGuaranteedPath(char[][] map, int playerX, int playerY) {
-        // Direções prioritárias: direita, baixo, esquerda, cima
-        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
-
-        for (int[] dir : directions) {
-            int x = playerX;
-            int y = playerY;
-
-            while (true) {
-                x += dir[0];
-                y += dir[1];
-
-                if (x < 0 || x >= MAP_COLS || y < 0 || y >= MAP_ROWS) break;
-
-                if (map[y][x] == 'H') {
-                    map[y][x] = 'V'; // Quebrar parede
-                    map[y - dir[1]][x - dir[0]] = 'S'; // Colocar 'S' na última posição válida
-                    return;
-                }
-            }
-        }
     }
 
     private static void ensureAccessiblePath(char[][] map, int startX, int startY) {
