@@ -1,0 +1,47 @@
+IDEAIS BOMBERMAN:
+
+Modos de jogo: 
+
+(1) Normal - O jogador tem 3 vidas, o objetivo é matar os inimigos e conseguir escapar do mapa.
+(2) Labirinto - A visibilidade do jogador é reduzida, não há inimigos e o objetivo é conseguir escapar do mapa. 
+(3) Temporizado - O jogador tem 3 vidas, inimigos voltam a aparecer e os blocos que se parte com as bombas voltam a regenerar-se e o objetivo é sobreviver num certo tempo.
+(4) Difícil - Junção dos 3 modos de jogo. O jogador não tem vidas (1 vida), o jogador tem 3 minutos para poder escapar do mapa, tem visão reduzida, os blocos que se pode partir voltam a regenerar-se e há mais inimigos.
+
+Modo de geração de mapas:
+
+Cria-se 5 mapas todos os modos de jogo, e para o modo 'LABIRINTO' fazer 2-3 mapas adicionais.
+
+Items/Power-ups (35% DE CONSEGUIR AO PARTIR UM BLOCO DESTRUTÍVEL):
+Items que podem ser encontrados quando o jogador parte um bloco, desaparecem a cada 10s em todos os modos de jogo sem ser no díficil (15s):
+
+(POSITIVOS)
+- O poder da bomba aumenta, ou seja, dá para partir mais blocos. (ATIVA-SE AUTOMATICAMENTE)
+- Aumenta a velocidade do jogador. (ATIVA-SE AUTOMATICAMENTE)
+- (Poder) Chutar: O jogador pode chutar a bomba, que remove a bomba.
+- Se o jogador tiver o poder 'chutar' e usá-lo, ela vai para outra parte do mapa, perto do jogador (raio de 4-6 blocos para todas as direções). (ATIVA-SE AUTOMATICAMENTE)
+- Aumenta as chances de conseguir power-ups ao partir blocos em 2x. (5%)(ATIVA-SE AUTOMATICAMENTE)
+- Aumenta a visibilidade do jogador (APENAS ENCONTRADO NO MODO DE JOGO 'LABIRINTO' E 'DIFÍCIL') (ATIVA-SE AUTOMATICAMENTE)
+- Mata todos os inimigos presentes no mapa (APENAS ENCONTRADO NO MODO DE JOGO 'DIFÍCL' COM 10% DE CHANCE DE ENCONTRAR E NO MODO DE JOGO 'TEMPORIZADO' COM 5%) 
+- Diminui tempo (APENAS DISPONÍVEL NO MODO DE JOGO 'TEMPORIZADO', 15s) (ATIVA-SE AUTOMATICAMENTE)
+- Se o jogador morrer, tem chance de reviver em que o jogador tem 50% de conseguir uma vida adicional (se tem 1 vida, passa a ter 2) (APENAS DISPONÍVEL NO MODO DE JOGO 'DIFÍCIL') (~2.5%) (ATIVA-SE AUTOMATICAMENTE)
+
+(NEGATIVOS)
+- O poder da bomba diminui (Caso o raio de explosão da bomba for 1, o mínimo, o poder vai ser anulado) (ATIVA-SE AUTOMATICAMENTE)
+- Velocidade reduzida (ATIVA-SE AUTOMATICAMENTE)
+- Os inimigos dão mais dano. (ATIVA-SE AUTOMATICAMENTE)
+- Redução de vida. (ATIVA-SE AUTOMATICAMENTE)
+- Dano aos inimigos reduzido. (ATIVA-SE AUTOMATICAMENTE)
+- Aumento do tempo (APENAS DISPONÍVEL NO MODO DE JOGO 'TEMPORIZADO', 15s) (ATIVA-SE AUTOMATICAMENTE)
+- Diminui o tempo (APENAS DISPONÍVEL NO MODO DE JOGO 'DIFÍCIL', 30s) (ATIVA-SE AUTOMATICAMENTE)
+- Redução de sorte em 50% (MINIMO: 1,09375%) (ATIVA-SE AUTOMATICAMENTE)
+
+Sistema de pontos (MUITO OPCIONAL):
+
+Parte 1 bloco -> 10 pontos
+Mata 1 inimigo -> 20 pontos
+Escapa do mapa -> 100 pontos
+(MODO DIFÍCIL) Cada segundo restante -> 2 pontos
+
+Opções (EXTREMAMENTE OPCIONAL):
+
+Menu incial em que se pode adicionar definições, como mudar o idioma/volume, um botão que explica como se joga.
