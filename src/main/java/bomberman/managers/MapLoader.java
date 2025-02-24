@@ -4,8 +4,10 @@ import bomberman.entities.Enemy;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MapLoader {
     public static final int MAP_COLS = 30;
@@ -23,6 +25,16 @@ public class MapLoader {
             this.playerX = playerX;
             this.playerY = playerY;
         }
+    }
+
+    private static boolean isBorderTile(int x, int y) {
+        return x == 0 || x == MAP_COLS - 1 || y == 0 || y == MAP_ROWS - 1;
+    }
+
+    private static boolean isFarFromPlayer(int x, int y, int playerX, int playerY) {
+        int dx = Math.abs(x - playerX);
+        int dy = Math.abs(y - playerY);
+        return (dx + dy) > 8;
     }
 
     public static LoadResult loadMap(String filePath) {
@@ -50,21 +62,36 @@ public class MapLoader {
 
                     switch (tile) {
                         case 'E':
-                            enemies.add(new Enemy(col, row, enemies)); // Passa a lista de referência
-                            map[row][col] = 'V'; // Substitui por vazio após criar inimigo
+                            enemies.add(new Enemy(col, row, enemies));
+                            map[row][col] = 'V';
                             break;
                         case 'P':
                             if (playerX != -1) throw new Exception("Posição duplicada do jogador");
                             playerX = col;
                             playerY = row;
-                            map[row][col] = 'V'; // Remove marcador do jogador
+                            map[row][col] = 'V';
                             break;
                         case ' ':
-                            map[row][col] = 'V'; // Normaliza espaços
+                            map[row][col] = 'V';
                             break;
                     }
                 }
                 row++;
+            }
+
+            List<Point> possibleSTiles = new ArrayList<>();
+            for (int y = 0; y < MAP_ROWS; y++) {
+                for (int x = 0; x < MAP_COLS; x++) {
+                    if (map[y][x] == 'H' && isBorderTile(x, y) && isFarFromPlayer(x, y, playerX, playerY)) {
+                        possibleSTiles.add(new Point(x, y));
+                    }
+                }
+            }
+
+            if (!possibleSTiles.isEmpty()) {
+                Random rand = new Random();
+                Point sPos = possibleSTiles.get(rand.nextInt(possibleSTiles.size()));
+                map[sPos.y][sPos.x] = 'S';
             }
 
             if (row != MAP_ROWS) {

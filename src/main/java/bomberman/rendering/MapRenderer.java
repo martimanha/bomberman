@@ -33,5 +33,15 @@ public class MapRenderer {
             case 'S':
                 g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
         }
+
+        switch (tile) {
+            case 'H':
+                g2.drawImage(blockSprites[0], posX, posY, TILE_SIZE, TILE_SIZE, null);
+                break;
+            case 'B':
+            case 'S':
+                g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
+                break;
+        }
     }
 }
