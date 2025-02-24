@@ -29,24 +29,22 @@ public class MapLoader {
     }
 
     private static boolean isValidSpecialTile(int x, int y, char[][] map, int playerX, int playerY) {
-        // Verificar bordas excluindo cantos
-        boolean isBorder = x == 0 || x == MAP_COLS - 1 || y == 0 || y == MAP_ROWS - 1;
-        boolean isForbiddenCorner = (x == 0 && y == 0) || (x == MAP_COLS - 1 && y == 0) ||
-                (x == 0 && y == MAP_ROWS - 1) || (x == MAP_COLS - 1 && y == MAP_ROWS - 1);
-        if (!isBorder || isForbiddenCorner) return false;
+        // Verificar se está em qualquer borda (exceto cantos)
+        boolean isEdge = (x == 0 || x == MAP_COLS-1 || y == 0 || y == MAP_ROWS-1);
+        boolean isCorner = (x == 0 && y == 0) ||
+                (x == 0 && y == MAP_ROWS-1) ||
+                (x == MAP_COLS-1 && y == 0) ||
+                (x == MAP_COLS-1 && y == MAP_ROWS-1);
+        if (!isEdge || isCorner) return false;
 
-        // Distância mínima de 5 tiles do jogador
-        if (Math.abs(x - playerX) < 5 || Math.abs(y - playerY) < 5) return false;
+        // Distância mínima de 3 tiles do jogador
+        if (Math.abs(x - playerX) < 3 || Math.abs(y - playerY) < 3) return false;
 
-        // Verificar parede oposta específica para cada borda
-        switch (x) {
-            case 0: if (map[y][x+1] != 'H') return false; break;          // Borda esquerda
-            case MAP_COLS-1: if (map[y][x-1] != 'H') return false; break; // Borda direita
-        }
-        switch (y) {
-            case 0: if (map[y+1][x] != 'H') return false; break;          // Borda superior
-            case MAP_ROWS-1: if (map[y-1][x] != 'H') return false; break; // Borda inferior
-        }
+        // Verificar parede oposta conforme especificado
+        if (x == 0 && map[y][x+1] != 'H') return false;          // Esquerda
+        if (x == MAP_COLS-1 && map[y][x-1] != 'H') return false; // Direita
+        if (y == 0 && map[y+1][x] != 'H') return false;          // Topo
+        if (y == MAP_ROWS-1 && map[y-1][x] != 'H') return false; // Base
 
         return map[y][x] == 'H';
     }
@@ -69,34 +67,36 @@ public class MapLoader {
             int[] pos = validPositions.get(rand.nextInt(validPositions.size()));
             map[pos[1]][pos[0]] = 'S';
         } else {
-            createGuaranteedPath(map, playerX, playerY);
+            createForcedPath(map, playerX, playerY);
         }
     }
 
-    private static void createGuaranteedPath(char[][] map, int playerX, int playerY) {
-        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}}; // Direita, Baixo, Esquerda, Cima
+    private static void createForcedPath(char[][] map, int startX, int startY) {
+        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}}; // Direções prioritárias
 
         for (int[] dir : directions) {
-            int x = playerX;
-            int y = playerY;
+            int x = startX;
+            int y = startY;
             List<int[]> path = new ArrayList<>();
 
             while (true) {
                 x += dir[0];
                 y += dir[1];
 
+                // Verificar se saiu do mapa
                 if (x < 0 || x >= MAP_COLS || y < 0 || y >= MAP_ROWS) {
-                    // Atingiu a borda - colocar 'S' no último tile válido
                     if (!path.isEmpty()) {
-                        int[] lastValid = path.get(path.size() - 1);
-                        map[lastValid[1]][lastValid[0]] = 'S';
+                        // Colocar 'S' no último tile válido com verificação
+                        int[] lastPos = path.get(path.size()-1);
+                        if (isValidSpecialTile(lastPos[0], lastPos[1], map, startX, startY)) {
+                            map[lastPos[1]][lastPos[0]] = 'S';
+                        }
                     }
                     return;
                 }
 
-                if (map[y][x] == 'H') {
-                    map[y][x] = 'V'; // Quebrar parede
-                }
+                // Quebrar paredes se necessário
+                if (map[y][x] == 'H') map[y][x] = 'V';
                 path.add(new int[]{x, y});
             }
         }
