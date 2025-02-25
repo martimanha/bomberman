@@ -42,4 +42,8 @@ public class GameConstants {
 
     public static final float ENEMY_BASE_SPEED = 0.1f; // Velocidade mais lenta
     public static final int ENEMY_MOVE_DELAY = 1000; // 1 segundo entre movimentos
+
+    public static final int LEVEL_TIME = 180; // 3 minutos em segundos
+    public static final int TIMER_X = SCREEN_WIDTH - 150;
+    public static final int TIMER_Y = HUD_PADDING_Y + 20;
 }

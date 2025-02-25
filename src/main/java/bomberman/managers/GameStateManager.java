@@ -23,24 +23,6 @@ public class GameStateManager {
         this.statusManager = player.getStatusManager();
     }
 
-    public void resetGameState() {
-        // Limpa todas as entidades
-        enemies.clear();
-        bombs.clear();
-        explosions.clear();
-
-        // Recarrega o mapa do arquivo
-        MapLoader.LoadResult result = MapLoader.loadMap("/maps/level1.csv");
-        this.gameMap = result.map;
-        this.enemies.addAll(result.enemies);
-
-        // Reseta a posição do jogador
-        player.resetPosition(result.playerX, result.playerY);
-
-        // Reseta os status do jogador
-        statusManager.reset();
-    }
-
     public void updateGameState() {
         updateEnemies();
         updateBombs();
@@ -60,10 +42,11 @@ public class GameStateManager {
     private void updateExplosions() {
         explosions.removeIf(explosion -> {
             if (explosion.isFinished()) {
-                explosion.getSegments().forEach(segment -> {
-                    int x = segment[0];
-                    int y = segment[1];
-                    if (gameMap[y][x] == 'E') gameMap[y][x] = 'V';
+                explosion.getSegments().forEach(seg -> {
+                    int x = seg[0];
+                    int y = seg[1];
+                    // Atualiza apenas tiles afetados por explosões
+                    if (gameMap[y][x] == 'B') gameMap[y][x] = 'V';
                 });
                 return true;
             }
@@ -73,11 +56,21 @@ public class GameStateManager {
 
     private void checkPlayerStatus() {
         if (!statusManager.isAlive()) {
-            // O tratamento real do game over é feito externamente
+            // Lógica de game over é tratada externamente
         }
     }
 
-    // Getter para acesso ao mapa
+    public void resetGameState() {
+        enemies.clear();
+        bombs.clear();
+        explosions.clear();
+        MapLoader.LoadResult result = MapLoader.loadMap("/maps/level1.csv");
+        this.gameMap = result.map;
+        this.enemies.addAll(result.enemies);
+        player.resetPosition(result.playerX, result.playerY);
+        statusManager.reset();
+    }
+
     public char[][] getGameMap() {
         return gameMap;
     }

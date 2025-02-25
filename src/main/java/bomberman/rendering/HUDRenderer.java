@@ -2,6 +2,7 @@ package bomberman.rendering;
 
 import bomberman.entities.Player;
 import bomberman.managers.StatusManager;
+import bomberman.managers.TimerManager;
 import java.awt.*;
 
 import static bomberman.GameConstants.*;
@@ -22,9 +23,10 @@ public class HUDRenderer {
         }
     }
 
-    public static void render(Graphics2D g2, StatusManager statusManager, Player player) {
+    public static void render(Graphics2D g2, StatusManager statusManager, Player player, TimerManager timerManager) {
         renderTopHUD(g2, statusManager, player);
         renderBottomHUD(g2, statusManager);
+        renderTimer(g2, timerManager);
     }
 
     private static void renderTopHUD(Graphics2D g2, StatusManager statusManager, Player player) {
@@ -42,6 +44,15 @@ public class HUDRenderer {
         renderSpeed(g2, statusManager, startY + lineHeight);
         renderLuck(g2, statusManager, startY + lineHeight * 2);
         renderDamage(g2, statusManager, startY + lineHeight * 3);
+    }
+
+    private static void renderTimer(Graphics2D g2, TimerManager timerManager) {
+        int time = timerManager.getRemainingTime();
+        Color timerColor = (time <= 30) ? Color.RED : TEXT_COLOR; // Vermelho se ≤30s
+
+        g2.setFont(hudFont.deriveFont(20f));
+        String timerText = String.format("Tempo: %02d:%02d", time / 60, time % 60);
+        drawTextWithOutline(g2, timerText, TIMER_X, TIMER_Y, timerColor);
     }
 
     public static void drawTextWithOutline(Graphics2D g2, String text, int x, int y, Color mainColor) {

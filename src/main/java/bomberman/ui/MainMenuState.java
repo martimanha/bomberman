@@ -1,12 +1,12 @@
 package bomberman.ui;
 
-import static bomberman.GameConstants.SCREEN_HEIGHT;
-import static bomberman.GameConstants.SCREEN_WIDTH;
+import static bomberman.GameConstants.*;
 
-import bomberman.utils.UILoader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+
+import bomberman.utils.UILoader;
 
 public class MainMenuState {
     private BufferedImage background;
@@ -31,48 +31,33 @@ public class MainMenuState {
 
     private void initializeButtons() {
         int buttonWidth = 200;
-
-        // Posicionamento original específico
-        int playButtonX = (SCREEN_WIDTH - buttonWidth)/2 - 20;
-        int playButtonY = 300;
-
-        int rulesButtonX = (SCREEN_WIDTH - buttonWidth)/2 - 15;
-        int rulesButtonY = 385;
-
-        int exitButtonX = rulesButtonX + 125;
+        int startX = (SCREEN_WIDTH - buttonWidth) / 2 - 20;
+        int playY = 300;
+        int rulesY = 385;
+        int exitX = startX + 125;
 
         playButton = new Button(
                 "main_menu/buttons/play.png",
                 "main_menu/buttons/play_hover.png",
-                playButtonX,
-                playButtonY
+                startX, playY
         );
 
         rulesButton = new Button(
                 "main_menu/buttons/rules.png",
                 "main_menu/buttons/rules_hover.png",
-                rulesButtonX,
-                rulesButtonY
+                startX, rulesY
         );
 
         exitButton = new Button(
                 "main_menu/buttons/exit.png",
                 "main_menu/buttons/exit_hover.png",
-                exitButtonX,
-                rulesButtonY
+                exitX, rulesY
         );
     }
 
-    public void handleMouseMove(Point mousePosition) {
-        playButton.update(mousePosition);
-        rulesButton.update(mousePosition);
-        exitButton.update(mousePosition);
-    }
-
-    public void handleClick(MouseEvent e, RulesMenuState rulesMenu, GameSelectionMenuState gameSelection) {
+    public void handleClick(MouseEvent e, RulesMenuState rulesMenu) {
         if (playButton.isClicked(e)) {
-            isActive = false;
-            gameSelection.setActive(true);
+            isActive = false; // Inicia o jogo diretamente
         } else if (rulesButton.isClicked(e)) {
             isActive = false;
             rulesMenu.setActive(true);
@@ -81,38 +66,37 @@ public class MainMenuState {
         }
     }
 
+    public void handleMouseMove(Point mousePosition) {
+        playButton.update(mousePosition);
+        rulesButton.update(mousePosition);
+        exitButton.update(mousePosition);
+    }
+
     public void render(Graphics2D g2) {
         // Fundo
         g2.drawImage(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, null);
 
-        // Título e subtítulo
-        renderTitle(g2);
+        // Título
+        int titleX = (SCREEN_WIDTH - title.getWidth()) / 2;
+        g2.drawImage(title, titleX, 100, null);
 
-        // Botões nas posições originais
+        // Subtítulo
+        int subtitleX = (SCREEN_WIDTH - subtitle.getWidth()) / 2;
+        g2.drawImage(subtitle, subtitleX, 180, null);
+
+        // Botões
         playButton.render(g2);
         rulesButton.render(g2);
         exitButton.render(g2);
     }
 
-    private void renderTitle(Graphics2D g2) {
-        if (title != null && subtitle != null) {
-            int titleX = (SCREEN_WIDTH - title.getWidth()) / 2;
-            int subtitleX = (SCREEN_WIDTH - subtitle.getWidth()) / 2;
-
-            g2.drawImage(title, titleX, 100, null);
-            g2.drawImage(subtitle, subtitleX, 180, null);
-        }
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-        // Resetar estados ao reativar
+    public void reset() {
         playButton.reset();
         rulesButton.reset();
         exitButton.reset();
+        isActive = true;
     }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 }

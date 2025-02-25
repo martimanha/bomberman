@@ -19,7 +19,7 @@ public class Enemy {
     private Player.Direction currentDirection;
     private final List<Enemy> allEnemies;
     private final AIController aiController;
-    private long lastMoveTime; // Novo campo para controle de tempo
+    private long lastMoveTime;
 
     public Enemy(int startXTile, int startYTile, List<Enemy> allEnemies) {
         this.targetXTile = startXTile;
@@ -29,7 +29,7 @@ public class Enemy {
         this.currentDirection = Player.Direction.DOWN;
         this.allEnemies = allEnemies;
         this.aiController = new AIController(this, allEnemies);
-        this.lastMoveTime = System.currentTimeMillis(); // Inicializa o tempo
+        this.lastMoveTime = System.currentTimeMillis();
         loadSprites();
     }
 
@@ -49,17 +49,14 @@ public class Enemy {
     }
 
     private void checkExplosionCollision() {
-        int currentXTile = (int)(pixelX / TILE_SIZE);
-        int currentYTile = (int)(pixelY / TILE_SIZE);
-
-        if (CollisionManager.checkExplosionCollision(currentXTile, currentYTile)) {
+        if (CollisionManager.checkExplosionCollision(targetXTile, targetYTile)) {
             isAlive = false;
         }
     }
 
     private void updatePosition() {
         if (isMoving) {
-            double speed = ENEMY_BASE_SPEED; // Usando constante nova
+            double speed = ENEMY_BASE_SPEED;
             double targetX = targetXTile * TILE_SIZE;
             double targetY = targetYTile * TILE_SIZE;
 
@@ -70,7 +67,7 @@ public class Enemy {
                 pixelX = targetX;
                 pixelY = targetY;
                 isMoving = false;
-                lastMoveTime = System.currentTimeMillis(); // Atualiza ao terminar movimento
+                lastMoveTime = System.currentTimeMillis();
             }
         }
     }
@@ -98,16 +95,12 @@ public class Enemy {
         }
     }
 
-    // Novo getter para o tempo do último movimento
-    public long getLastMoveTime() {
-        return lastMoveTime;
-    }
-
     // Getters
     public int getXTile() { return targetXTile; }
     public int getYTile() { return targetYTile; }
     public boolean isAlive() { return isAlive; }
     public boolean isMoving() { return isMoving; }
+    public long getLastMoveTime() { return lastMoveTime; }
     public double getPixelX() { return pixelX; }
     public double getPixelY() { return pixelY; }
 }

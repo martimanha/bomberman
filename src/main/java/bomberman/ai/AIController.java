@@ -15,7 +15,7 @@ public class AIController {
     private static final double CHASE_PLAYER_CHANCE = 0.6;
     private static final double ESCAPE_EXPLOSION_CHANCE = 0.4;
     private static final int[][] DIRECTIONS = {{1,0}, {-1,0}, {0,1}, {0,-1}};
-    private static final int ENEMY_MOVE_DELAY = 1000; // 1 segundo entre movimentos
+    private static final int ENEMY_MOVE_DELAY = 1000;
 
     private final Enemy enemy;
     private final List<Enemy> allEnemies;
@@ -29,7 +29,6 @@ public class AIController {
     }
 
     public void update(Player player) {
-        // Verifica se pode se mover (delay + movimento atual)
         if (player == null ||
                 enemy.isMoving() ||
                 (System.currentTimeMillis() - enemy.getLastMoveTime()) < ENEMY_MOVE_DELAY) {
@@ -50,7 +49,7 @@ public class AIController {
             return;
         }
 
-        // Movimento aleatório
+        // Movimento aleatório padrão
         moveRandomly();
     }
 
@@ -89,7 +88,7 @@ public class AIController {
             Point direction = safeDirections.get(random.nextInt(safeDirections.size()));
             enemy.move(direction.x, direction.y);
         } else {
-            moveRandomly(); // Fallback se não houver direções seguras
+            moveRandomly();
         }
     }
 

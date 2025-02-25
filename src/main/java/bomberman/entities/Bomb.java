@@ -13,7 +13,7 @@ public class Bomb {
     private final int power;
     private long placedTime;
     private boolean exploded = false;
-    private transient List<Explosion> explosions; // Referência à lista de explosões do GamePanel
+    private transient List<Explosion> explosions;
 
     public Bomb(int xTile, int yTile, int power) {
         this.xTile = xTile;
@@ -34,15 +34,7 @@ public class Bomb {
 
     private void explode() {
         Explosion newExplosion = new Explosion(xTile, yTile, power);
-        newExplosion.getSegments().forEach(segment -> {
-            int x = segment[0];
-            int y = segment[1];
-            CollisionManager.destroyBlock(x, y);
-        });
-
-        if (explosions != null) {
-            explosions.add(newExplosion);
-        }
+        explosions.add(newExplosion);
         exploded = true;
     }
 
@@ -53,10 +45,7 @@ public class Bomb {
         g2.drawImage(sprite, x, y, TILE_SIZE, TILE_SIZE, null);
     }
 
-    public boolean hasExploded() {
-        return exploded;
-    }
-
+    public boolean hasExploded() { return exploded; }
     public int getXTile() { return xTile; }
     public int getYTile() { return yTile; }
     public int getPower() { return power; }

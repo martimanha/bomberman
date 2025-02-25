@@ -36,23 +36,18 @@ public class CollisionManager {
     }
 
     public static void destroyBlock(int x, int y) {
-        if (map[y][x] == 'B') {
+        if (map[y][x] == 'B' || map[y][x] == 'S') { // Permitir destruir 'S'
             map[y][x] = 'V';
             tryGeneratePowerUp(x, y);
         }
     }
 
     public static boolean checkExplosionCollision(int xTile, int yTile) {
-        if (isOutOfBounds(xTile, yTile) || map[yTile][xTile] == 'E') {
-            return false;
-        }
-
         return explosions.stream()
                 .flatMap(explosion -> explosion.getSegments().stream())
                 .anyMatch(seg -> seg[0] == xTile && seg[1] == yTile);
     }
 
-    // Novo método para acesso às explosões
     public static List<Explosion> getExplosions() {
         return explosions;
     }
@@ -68,7 +63,7 @@ public class CollisionManager {
     public static boolean isSolidBlock(int x, int y) {
         if (isOutOfBounds(x, y)) return true;
         char tile = map[y][x];
-        return tile == 'H' || tile == 'B';
+        return tile == 'H' || tile == 'B' || tile == 'S'; // Adicionar 'S' como sólido
     }
 
     private static boolean isBombAtPosition(int x, int y) {

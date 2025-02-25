@@ -27,13 +27,6 @@ public class Explosion {
         expandDirection(centerX, centerY, -1, 0); // Esquerda
         expandDirection(centerX, centerY, 0, 1);  // Baixo
         expandDirection(centerX, centerY, 0, -1); // Cima
-
-        // Remove segmentos que coincidem com tiles de spawn de inimigos ('E')
-        segments.removeIf(seg -> {
-            int x = seg[0];
-            int y = seg[1];
-            return CollisionManager.getMap()[y][x] == 'E';
-        });
     }
 
     private void expandDirection(int startX, int startY, int dx, int dy) {
@@ -45,10 +38,11 @@ public class Explosion {
 
             char tile = CollisionManager.getMap()[y][x];
             if (tile == 'H') break; // Parede indestrutível
+
             addValidSegment(x, y);
-            if (tile == 'B') { // Parede destrutível
+
+            if (tile == 'B' || tile == 'S') { // Destruir 'S' também
                 CollisionManager.destroyBlock(x, y);
-                break;
             }
         }
     }
@@ -58,7 +52,9 @@ public class Explosion {
     }
 
     private void addValidSegment(int x, int y) {
-        segments.add(new int[]{x, y});
+        if (CollisionManager.getMap()[y][x] != 'E') { // Ignora tiles de spawn de inimigos
+            segments.add(new int[]{x, y});
+        }
     }
 
     public void draw(Graphics2D g2) {

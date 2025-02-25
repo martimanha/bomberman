@@ -21,7 +21,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Estados da UI
     private final MainMenuState mainMenuState;
-    private final GameSelectionMenuState gameSelectionState;
     private final RulesMenuState rulesMenuState;
     private final GameOverState gameOverState;
     private final LevelCompleteMenu levelCompleteMenu;
@@ -36,6 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Gerenciadores
     private final MapManager mapManager;
+    private final TimerManager timerManager;
     private char[][] gameMap;
     private final BufferedImage[] blockSprites = new BufferedImage[2];
     private BufferedImage floorSprite;
@@ -47,10 +47,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         inputKey = new InputKey();
         mapManager = new MapManager();
+        timerManager = new TimerManager(LEVEL_TIME);
 
         // Inicialização de estados UI
         mainMenuState = new MainMenuState();
-        gameSelectionState = new GameSelectionMenuState(mainMenuState);
         rulesMenuState = new RulesMenuState();
         gameOverState = new GameOverState();
         levelCompleteMenu = new LevelCompleteMenu();
@@ -94,6 +94,7 @@ public class GamePanel extends JPanel implements Runnable {
         powerUps = new ArrayList<>();
 
         CollisionManager.initialize(gameMap, bombs, powerUps, explosions);
+        timerManager.reset(); // Resetar o timer ao iniciar novo nível
     }
 
     private void loadSprites() {
@@ -137,13 +138,12 @@ public class GamePanel extends JPanel implements Runnable {
             updateExplosions();
             updatePowerUps();
             checkCollisions();
+            checkGameOver();
         }
-        checkGameOver();
     }
 
     private boolean shouldUpdateGame() {
         return !mainMenuState.isActive()
-                && !gameSelectionState.isActive()
                 && !rulesMenuState.isActive()
                 && !gameOverState.isActive()
                 && !levelCompleteMenu.isActive()
@@ -253,7 +253,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void checkGameOver() {
-        if (!player.isAlive() && !gameOverState.isActive()) {
+        if ((!player.isAlive() || timerManager.isTimeUp()) && !gameOverState.isActive()) {
             triggerGameOver();
         }
     }
@@ -288,14 +288,12 @@ public class GamePanel extends JPanel implements Runnable {
         EntityRenderer.drawPlayer(g2, player);
         EntityRenderer.drawEnemies(g2, enemies);
         EntityRenderer.drawExplosions(g2, explosions);
-        HUDRenderer.render(g2, player.getStatusManager(), player);
+        HUDRenderer.render(g2, player.getStatusManager(), player, timerManager);
     }
 
     private void renderUIElements(Graphics2D g2) {
         if (mainMenuState.isActive()) {
             mainMenuState.render(g2);
-        } else if (gameSelectionState.isActive()) {
-            gameSelectionState.render(g2);
         } else if (rulesMenuState.isActive()) {
             rulesMenuState.render(g2);
         } else if (gameOverState.isActive()) {
@@ -309,9 +307,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void handleUIInteraction(MouseEvent e) {
         if (mainMenuState.isActive()) {
-            mainMenuState.handleClick(e, rulesMenuState, gameSelectionState);
-        } else if (gameSelectionState.isActive()) {
-            gameSelectionState.handleClick(e);
+            mainMenuState.handleClick(e, rulesMenuState);
         } else if (rulesMenuState.isActive()) {
             rulesMenuState.handleClick(e);
         } else if (gameOverState.isActive()) {
@@ -352,8 +348,6 @@ public class GamePanel extends JPanel implements Runnable {
     private void updateUIHoverStates(Point mousePos) {
         if (mainMenuState.isActive()) {
             mainMenuState.handleMouseMove(mousePos);
-        } else if (gameSelectionState.isActive()) {
-            gameSelectionState.handleMouseMove(mousePos);
         } else if (rulesMenuState.isActive()) {
             rulesMenuState.handleMouseMove(mousePos);
         } else if (gameOverState.isActive()) {
