@@ -1,12 +1,25 @@
 package bomberman.ai;
 
 import bomberman.managers.CollisionManager;
-import bomberman.GameConstants;
+import static bomberman.GameConstants.*;
+import bomberman.entities.Enemy;
 import java.awt.Point;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.HashMap;
 
 public class Pathfinder {
     private static final int[][] DIRECTIONS = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+    private final List<Enemy> enemies;
+
+    public Pathfinder(List<Enemy> enemies) {
+        this.enemies = enemies;
+    }
 
     public List<Point> findPath(Point start, Point target) {
         Queue<Node> queue = new LinkedList<>();
@@ -37,7 +50,7 @@ public class Pathfinder {
                 }
             }
         }
-        return Collections.emptyList(); // No path found
+        return Collections.emptyList();
     }
 
     private List<Point> reconstructPath(Map<Point, Point> cameFrom, Point current) {
@@ -50,9 +63,9 @@ public class Pathfinder {
     }
 
     private boolean isValid(Point p) {
-        return CollisionManager.canMoveTo(p.x, p.y) &&
-                p.x >= 0 && p.x < GameConstants.MAP_COLS &&
-                p.y >= 0 && p.y < GameConstants.MAP_ROWS;
+        return CollisionManager.canEnemyMoveTo(p.x, p.y, enemies) &&
+                p.x >= 0 && p.x < MAP_COLS &&
+                p.y >= 0 && p.y < MAP_ROWS;
     }
 
     private static class Node {

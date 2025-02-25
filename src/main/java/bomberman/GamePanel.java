@@ -4,10 +4,7 @@ import bomberman.entities.*;
 import bomberman.managers.*;
 import bomberman.powerups.PowerUp;
 import bomberman.rendering.*;
-import bomberman.ui.GameOverState;
-import bomberman.ui.MainMenuState;
-import bomberman.ui.RulesMenuState;
-import bomberman.ui.GameSelectionMenuState;
+import bomberman.ui.*;
 import bomberman.utils.SpriteLoader;
 import javax.swing.*;
 import java.awt.*;
@@ -15,8 +12,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static bomberman.GameConstants.*;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -28,9 +23,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final MainMenuState mainMenuState;
     private final GameSelectionMenuState gameSelectionState;
     private final RulesMenuState rulesMenuState;
-    private final bomberman.ui.GameOverState gameOverState;
+    private final GameOverState gameOverState;
 
-    // Entidades do jogo
+    // Entidades
     private Player player;
     private List<Enemy> enemies;
     private List<Bomb> bombs;
@@ -52,11 +47,11 @@ public class GamePanel extends JPanel implements Runnable {
         mapManager = new MapManager();
         currentMapFile = mapManager.getRandomMap();
 
-        // Inicializar estados UI
+        // Inicialização de estados UI
         mainMenuState = new MainMenuState();
         gameSelectionState = new GameSelectionMenuState(mainMenuState);
         rulesMenuState = new RulesMenuState();
-        gameOverState = new bomberman.ui.GameOverState();
+        gameOverState = new GameOverState();
 
         initializeGame(currentMapFile);
         setupInputHandling();
@@ -78,7 +73,6 @@ public class GamePanel extends JPanel implements Runnable {
                 updateUIHoverStates(e.getPoint());
             }
         });
-
         setFocusable(true);
     }
 
@@ -91,7 +85,7 @@ public class GamePanel extends JPanel implements Runnable {
         explosions = new ArrayList<>();
         powerUps = new ArrayList<>();
 
-        CollisionManager.initialize(gameMap, bombs, powerUps);
+        CollisionManager.initialize(gameMap, bombs, powerUps, explosions);
     }
 
     private void loadSprites() {
@@ -136,10 +130,7 @@ public class GamePanel extends JPanel implements Runnable {
             updatePowerUps();
             checkCollisions();
         }
-
-        if (!player.isAlive() && !gameOverState.isActive()) {
-            triggerGameOver();
-        }
+        checkGameOver();
     }
 
     private boolean shouldUpdateGame() {
@@ -150,14 +141,23 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void handleInput() {
-        if (inputKey.isKeyPressed(KeyEvent.VK_W)) player.move(Player.Direction.UP);
-        if (inputKey.isKeyPressed(KeyEvent.VK_S)) player.move(Player.Direction.DOWN);
-        if (inputKey.isKeyPressed(KeyEvent.VK_A)) player.move(Player.Direction.LEFT);
-        if (inputKey.isKeyPressed(KeyEvent.VK_D)) player.move(Player.Direction.RIGHT);
+        if (inputKey.isKeyPressed(KeyEvent.VK_W)) tryMove(Player.Direction.UP);
+        if (inputKey.isKeyPressed(KeyEvent.VK_S)) tryMove(Player.Direction.DOWN);
+        if (inputKey.isKeyPressed(KeyEvent.VK_A)) tryMove(Player.Direction.LEFT);
+        if (inputKey.isKeyPressed(KeyEvent.VK_D)) tryMove(Player.Direction.RIGHT);
 
         if (inputKey.getLastKeyPressed() == KeyEvent.VK_SPACE) {
             placeBomb();
             inputKey.clearLastKeyPressed();
+        }
+    }
+
+    private void tryMove(Player.Direction dir) {
+        int newX = player.getXTile() + dir.xOffset;
+        int newY = player.getYTile() + dir.yOffset;
+
+        if (CollisionManager.canMoveTo(newX, newY, player.isInvulnerable())) {
+            player.move(dir);
         }
     }
 
@@ -183,7 +183,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void updatePowerUps() {
-        powerUps.removeIf(powerUp -> !powerUp.isActive());
+        new PowerUpManager(powerUps, player).update();
     }
 
     private void checkCollisions() {
@@ -192,12 +192,15 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void checkPlayerExplosionCollision() {
-        if (CollisionManager.checkExplosionCollision(player.getXTile(), player.getYTile())) {
+        if (!player.isInvulnerable() &&
+                CollisionManager.checkExplosionCollision(player.getXTile(), player.getYTile())) {
             player.takeDamage();
         }
     }
 
     private void checkEnemyCollision() {
+        if (player.isInvulnerable()) return;
+
         enemies.stream()
                 .filter(Enemy::isAlive)
                 .filter(e -> e.getXTile() == player.getXTile() && e.getYTile() == player.getYTile())
@@ -225,6 +228,12 @@ public class GamePanel extends JPanel implements Runnable {
     private void checkLevelTransition() {
         if (gameMap[player.getYTile()][player.getXTile()] == 'S') {
             resetGame();
+        }
+    }
+
+    private void checkGameOver() {
+        if (!player.isAlive() && !gameOverState.isActive()) {
+            triggerGameOver();
         }
     }
 
@@ -277,11 +286,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderGameOverOverlay(Graphics2D g2) {
-        // Fundo semi-transparente
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        // Elementos do Game Over
         gameOverState.render(g2);
     }
 

@@ -2,69 +2,33 @@ package bomberman.ai;
 
 import bomberman.entities.Enemy;
 import bomberman.entities.Player;
-import java.util.Random;
+import java.awt.Point;
+import java.util.List;
 
 public class AIController {
-    private static final int DETECTION_RANGE = 3;
-    private static final double CHASE_PROBABILITY = 0.5;
     private final Enemy enemy;
-    private final Random random;
-    private int targetX;
-    private int targetY;
+    private final List<Enemy> allEnemies;
+    private final Pathfinder pathfinder;
 
-    public AIController(Enemy enemy) {
+    public AIController(Enemy enemy, List<Enemy> allEnemies) {
         this.enemy = enemy;
-        this.random = new Random();
-        this.targetX = enemy.getXTile();
-        this.targetY = enemy.getYTile();
+        this.allEnemies = allEnemies;
+        this.pathfinder = new Pathfinder(allEnemies);
     }
 
     public void update(Player player) {
-        if (isPlayerInRange(player)) {
-            if (shouldChase()) {
-                chasePlayer(player);
-            } else {
-                moveRandomly();
-            }
-        } else {
-            moveRandomly();
-        }
-    }
+        if (player == null) return;
 
-    private boolean isPlayerInRange(Player player) {
-        int dx = Math.abs(enemy.getXTile() - player.getXTile());
-        int dy = Math.abs(enemy.getYTile() - player.getYTile());
-        return (dx + dy) <= DETECTION_RANGE;
-    }
+        Point current = new Point(enemy.getXTile(), enemy.getYTile());
+        Point target = new Point(player.getXTile(), player.getYTile());
 
-    private boolean shouldChase() {
-        return random.nextDouble() < CHASE_PROBABILITY;
-    }
+        List<Point> path = pathfinder.findPath(current, target);
 
-    private void chasePlayer(Player player) {
-        if (random.nextInt(100) < 30) {
-            targetX = player.getXTile();
-            targetY = player.getYTile();
-        }
-        calculateMovement();
-    }
-
-    private void moveRandomly() {
-        if (enemy.getXTile() == targetX && enemy.getYTile() == targetY) {
-            targetX = enemy.getXTile() + random.nextInt(3) - 1;
-            targetY = enemy.getYTile() + random.nextInt(3) - 1;
-        }
-        calculateMovement();
-    }
-
-    private void calculateMovement() {
-        int dx = Integer.compare(targetX, enemy.getXTile());
-        int dy = Integer.compare(targetY, enemy.getYTile());
-
-        if (dx != 0) {
-            enemy.move(dx, 0);
-        } else if (dy != 0) {
-            enemy.move(0, dy);
+        if (!path.isEmpty()) {
+            Point nextStep = path.get(0);
+            int dx = nextStep.x - enemy.getXTile();
+            int dy = nextStep.y - enemy.getYTile();
+            enemy.move(dx, dy);
         }
     }
 }

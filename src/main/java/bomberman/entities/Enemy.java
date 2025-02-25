@@ -1,14 +1,14 @@
 package bomberman.entities;
 
+import bomberman.ai.AIController;
 import bomberman.managers.CollisionManager;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Random;
 import static bomberman.GameConstants.*;
 
 public class Enemy {
@@ -21,6 +21,7 @@ public class Enemy {
     private boolean isAlive = true;
     private Player.Direction currentDirection;
     private final List<Enemy> allEnemies;
+    private final AIController aiController;
 
     public Enemy(int startXTile, int startYTile, List<Enemy> allEnemies) {
         this.targetXTile = startXTile;
@@ -29,6 +30,7 @@ public class Enemy {
         this.pixelY = startYTile * TILE_SIZE;
         this.currentDirection = Player.Direction.DOWN;
         this.allEnemies = allEnemies;
+        this.aiController = new AIController(this, allEnemies);
         this.lastMoveTime = System.currentTimeMillis();
         loadSprites();
     }
@@ -42,6 +44,8 @@ public class Enemy {
 
     public void update(Player player) {
         if (!isAlive) return;
+
+        aiController.update(player);
 
         if (System.currentTimeMillis() - lastMoveTime > ENEMY_MOVE_INTERVAL) {
             attemptMove();
@@ -117,4 +121,6 @@ public class Enemy {
     public int getXTile() { return targetXTile; }
     public int getYTile() { return targetYTile; }
     public boolean isAlive() { return isAlive; }
+    public double getPixelX() { return pixelX; }
+    public double getPixelY() { return pixelY; }
 }

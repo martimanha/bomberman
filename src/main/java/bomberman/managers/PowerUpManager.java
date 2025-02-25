@@ -2,9 +2,8 @@ package bomberman.managers;
 
 import bomberman.entities.Player;
 import bomberman.powerups.PowerUp;
-import bomberman.managers.StatusManager;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 public class PowerUpManager {
     private final List<PowerUp> powerUps;

@@ -55,21 +55,17 @@ public class Player {
     }
 
     public void move(Direction dir) {
-        if (isMoving || isInvulnerable || !isAlive) return;
+        if (isMoving || !isAlive) return;
 
         int newX = targetXTile + dir.xOffset;
         int newY = targetYTile + dir.yOffset;
 
-        if (CollisionManager.canMoveTo(newX, newY) && !isInExplosion(newX, newY)) {
+        if (CollisionManager.canMoveTo(newX, newY, isInvulnerable)) {
             targetXTile = newX;
             targetYTile = newY;
             currentDirection = dir;
             isMoving = true;
         }
-    }
-
-    private boolean isInExplosion(int x, int y) {
-        return CollisionManager.checkExplosionCollision(x, y);
     }
 
     public void update() {
@@ -162,4 +158,7 @@ public class Player {
     public boolean isAlive() { return isAlive; }
     public Direction getCurrentDirection() { return currentDirection; }
     public StatusManager getStatusManager() { return statusManager; }
+    public boolean isInvulnerable() { return isInvulnerable; }
+    public double getPixelX() { return pixelX; }
+    public double getPixelY() { return pixelY; }
 }

@@ -12,7 +12,7 @@ public class GameConstants {
     public static final int PLAYER_START_LIVES = 3;
     public static final int PLAYER_MAX_LIVES = 3;
     public static final float PLAYER_BASE_SPEED = 0.2f;
-    public static final int PLAYER_INVULNERABILITY_DURATION = 5000; // ms
+    public static final int PLAYER_INVULNERABILITY_DURATION = 2500; // ms
 
     // Configurações de Bombas
     public static final int BOMB_BASE_POWER = 1;

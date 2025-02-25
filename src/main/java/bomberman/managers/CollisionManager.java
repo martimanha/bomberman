@@ -12,23 +12,26 @@ public class CollisionManager {
     private static char[][] map;
     private static List<Bomb> bombs;
     private static List<PowerUp> powerUps;
+    private static List<Explosion> explosions;
 
-    public static void initialize(char[][] gameMap, List<Bomb> activeBombs, List<PowerUp> activePowerUps) {
+    public static void initialize(char[][] gameMap, List<Bomb> activeBombs,
+                                  List<PowerUp> activePowerUps, List<Explosion> activeExplosions) {
         map = gameMap;
         bombs = activeBombs;
         powerUps = activePowerUps;
+        explosions = activeExplosions;
     }
 
-    public static boolean canMoveTo(int xTile, int yTile) {
+    public static boolean canMoveTo(int xTile, int yTile, boolean isInvulnerable) {
         if (isOutOfBounds(xTile, yTile)) return false;
         if (isSolidBlock(xTile, yTile)) return false;
-        return !isBombAtPosition(xTile, yTile) && !checkExplosionCollision(xTile, yTile);
+        return isInvulnerable || !checkExplosionCollision(xTile, yTile);
     }
 
     public static boolean canEnemyMoveTo(int xTile, int yTile, List<Enemy> enemies) {
         if (isOutOfBounds(xTile, yTile)) return false;
         if (isSolidBlock(xTile, yTile)) return false;
-        return !isEnemyAtPosition(xTile, yTile, enemies);
+        return !isEnemyAtPosition(xTile, yTile, enemies) && !isBombAtPosition(xTile, yTile);
     }
 
     public static void destroyBlock(int x, int y) {
@@ -39,13 +42,9 @@ public class CollisionManager {
     }
 
     public static boolean checkExplosionCollision(int xTile, int yTile) {
-        return bombs.stream()
-                .filter(Bomb::hasExploded)
-                .anyMatch(b -> {
-                    Explosion explosion = new Explosion(b.getXTile(), b.getYTile(), b.getPower());
-                    return explosion.getSegments().stream()
-                            .anyMatch(seg -> seg[0] == xTile && seg[1] == yTile);
-                });
+        return explosions.stream()
+                .flatMap(explosion -> explosion.getSegments().stream())
+                .anyMatch(seg -> seg[0] == xTile && seg[1] == yTile);
     }
 
     public static char[][] getMap() {
