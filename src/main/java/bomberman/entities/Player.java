@@ -1,12 +1,13 @@
 package bomberman.entities;
 
 import bomberman.managers.CollisionManager;
+import java.util.EnumMap;
+import java.util.Map;
+
 import bomberman.managers.StatusManager;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.EnumMap;
-import java.util.Map;
 import static bomberman.GameConstants.*;
 
 public class Player {
@@ -121,6 +122,20 @@ public class Player {
         damageTime = System.currentTimeMillis();
     }
 
+    public void draw(Graphics2D g2) {
+        if (isAlive) {
+            BufferedImage currentSprite = sprites.get(currentDirection);
+            if (isInvulnerable) {
+                // Piscar durante invulnerabilidade
+                if ((System.currentTimeMillis() / 200) % 2 == 0) {
+                    g2.drawImage(currentSprite, (int) pixelX, (int) pixelY, TILE_SIZE, TILE_SIZE, null);
+                }
+            } else {
+                g2.drawImage(currentSprite, (int) pixelX, (int) pixelY, TILE_SIZE, TILE_SIZE, null);
+            }
+        }
+    }
+
     public void resetPosition(int xTile, int yTile) {
         this.targetXTile = xTile;
         this.targetYTile = yTile;
@@ -128,26 +143,7 @@ public class Player {
         this.pixelY = yTile * TILE_SIZE;
         this.isMoving = false;
         this.isInvulnerable = false;
-        this.currentDirection = Direction.RIGHT;
         this.isAlive = true;
-        this.statusManager.reset();
-    }
-
-    public void draw(Graphics2D g2) {
-        if (isAlive) {
-            if (isInvulnerable) {
-                if ((System.currentTimeMillis() / 200) % 2 == 0) {
-                    drawSprite(g2);
-                }
-            } else {
-                drawSprite(g2);
-            }
-        }
-    }
-
-    private void drawSprite(Graphics2D g2) {
-        BufferedImage currentSprite = sprites.get(currentDirection);
-        g2.drawImage(currentSprite, (int) pixelX, (int) pixelY, TILE_SIZE, TILE_SIZE, null);
     }
 
     // Getters

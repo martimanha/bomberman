@@ -24,6 +24,8 @@ public class GamePanel extends JPanel implements Runnable {
     private final GameSelectionMenuState gameSelectionState;
     private final RulesMenuState rulesMenuState;
     private final GameOverState gameOverState;
+    private final LevelCompleteMenu levelCompleteMenu;
+    private final GameCompletedState gameCompletedState;
 
     // Entidades
     private Player player;
@@ -45,15 +47,16 @@ public class GamePanel extends JPanel implements Runnable {
 
         inputKey = new InputKey();
         mapManager = new MapManager();
-        currentMapFile = mapManager.getRandomMap();
 
         // Inicialização de estados UI
         mainMenuState = new MainMenuState();
         gameSelectionState = new GameSelectionMenuState(mainMenuState);
         rulesMenuState = new RulesMenuState();
         gameOverState = new GameOverState();
+        levelCompleteMenu = new LevelCompleteMenu();
+        gameCompletedState = new GameCompletedState();
 
-        initializeGame(currentMapFile);
+        startNewGame();
         setupInputHandling();
         loadSprites();
     }
@@ -74,6 +77,11 @@ public class GamePanel extends JPanel implements Runnable {
             }
         });
         setFocusable(true);
+    }
+
+    private void startNewGame() {
+        currentMapFile = mapManager.getRandomMap();
+        initializeGame(currentMapFile);
     }
 
     private void initializeGame(String mapFile) {
@@ -137,10 +145,14 @@ public class GamePanel extends JPanel implements Runnable {
         return !mainMenuState.isActive()
                 && !gameSelectionState.isActive()
                 && !rulesMenuState.isActive()
-                && !gameOverState.isActive();
+                && !gameOverState.isActive()
+                && !levelCompleteMenu.isActive()
+                && !gameCompletedState.isActive();
     }
 
     private void handleInput() {
+        if (!player.isAlive() || levelCompleteMenu.isActive() || gameCompletedState.isActive()) return;
+
         if (inputKey.isKeyPressed(KeyEvent.VK_W)) tryMove(Player.Direction.UP);
         if (inputKey.isKeyPressed(KeyEvent.VK_S)) tryMove(Player.Direction.DOWN);
         if (inputKey.isKeyPressed(KeyEvent.VK_A)) tryMove(Player.Direction.LEFT);
@@ -227,8 +239,17 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void checkLevelTransition() {
         if (gameMap[player.getYTile()][player.getXTile()] == 'S') {
-            resetGame();
+            if (mapManager.getRemainingMaps() == 0) {
+                gameCompletedState.activate();
+            } else {
+                levelCompleteMenu.activate();
+            }
         }
+    }
+
+    private void loadNextLevel() {
+        startNewGame();
+        levelCompleteMenu.deactivate();
     }
 
     private void checkGameOver() {
@@ -243,9 +264,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void resetGame() {
-        currentMapFile = mapManager.getRandomMap();
-        initializeGame(currentMapFile);
-        loadSprites();
+        mapManager.resetMaps();
+        startNewGame();
         gameOverState.deactivate();
         isRunning = true;
     }
@@ -262,15 +282,13 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderGameWorld(Graphics2D g2) {
-        if (shouldUpdateGame()) {
-            MapRenderer.render(g2, gameMap, floorSprite, blockSprites);
-            EntityRenderer.drawBombs(g2, bombs);
-            EntityRenderer.drawPowerUps(g2, powerUps);
-            EntityRenderer.drawPlayer(g2, player);
-            EntityRenderer.drawEnemies(g2, enemies);
-            EntityRenderer.drawExplosions(g2, explosions);
-            HUDRenderer.render(g2, player.getStatusManager(), player);
-        }
+        MapRenderer.render(g2, gameMap, floorSprite, blockSprites);
+        EntityRenderer.drawBombs(g2, bombs);
+        EntityRenderer.drawPowerUps(g2, powerUps);
+        EntityRenderer.drawPlayer(g2, player);
+        EntityRenderer.drawEnemies(g2, enemies);
+        EntityRenderer.drawExplosions(g2, explosions);
+        HUDRenderer.render(g2, player.getStatusManager(), player);
     }
 
     private void renderUIElements(Graphics2D g2) {
@@ -281,14 +299,12 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (rulesMenuState.isActive()) {
             rulesMenuState.render(g2);
         } else if (gameOverState.isActive()) {
-            renderGameOverOverlay(g2);
+            gameOverState.render(g2);
+        } else if (levelCompleteMenu.isActive()) {
+            levelCompleteMenu.render(g2);
+        } else if (gameCompletedState.isActive()) {
+            gameCompletedState.render(g2);
         }
-    }
-
-    private void renderGameOverOverlay(Graphics2D g2) {
-        g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        gameOverState.render(g2);
     }
 
     private void handleUIInteraction(MouseEvent e) {
@@ -300,6 +316,10 @@ public class GamePanel extends JPanel implements Runnable {
             rulesMenuState.handleClick(e);
         } else if (gameOverState.isActive()) {
             handleGameOverClick(e);
+        } else if (levelCompleteMenu.isActive()) {
+            handleLevelCompleteClick(e);
+        } else if (gameCompletedState.isActive()) {
+            handleGameCompletedClick(e);
         }
     }
 
@@ -312,6 +332,23 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    private void handleLevelCompleteClick(MouseEvent e) {
+        if (levelCompleteMenu.getNextLevelButton().isClicked(e)) {
+            loadNextLevel();
+        } else if (levelCompleteMenu.getExitButton().isClicked(e)) {
+            mainMenuState.setActive(true);
+            levelCompleteMenu.deactivate();
+        }
+    }
+
+    private void handleGameCompletedClick(MouseEvent e) {
+        if (gameCompletedState.getMenuButton().isClicked(e)) {
+            mainMenuState.setActive(true);
+            gameCompletedState.deactivate();
+            mapManager.resetMaps();
+        }
+    }
+
     private void updateUIHoverStates(Point mousePos) {
         if (mainMenuState.isActive()) {
             mainMenuState.handleMouseMove(mousePos);
@@ -321,10 +358,24 @@ public class GamePanel extends JPanel implements Runnable {
             rulesMenuState.handleMouseMove(mousePos);
         } else if (gameOverState.isActive()) {
             gameOverState.handleMouseMove(mousePos);
+        } else if (levelCompleteMenu.isActive()) {
+            levelCompleteMenu.handleMouseMove(mousePos);
+        } else if (gameCompletedState.isActive()) {
+            gameCompletedState.handleMouseMove(mousePos);
         }
     }
 
     public List<Enemy> getEnemies() {
         return enemies;
+    }
+
+    public void fullReset() {
+        mapManager.resetMaps();
+        startNewGame();
+        gameOverState.deactivate();
+        levelCompleteMenu.deactivate();
+        gameCompletedState.deactivate();
+        mainMenuState.setActive(false);
+        isRunning = true;
     }
 }
