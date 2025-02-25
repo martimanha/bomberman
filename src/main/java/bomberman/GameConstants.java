@@ -16,7 +16,7 @@ public class GameConstants {
 
     // Configurações de Bombas
     public static final int BOMB_BASE_POWER = 1;
-    public static final int MAX_BOMB_POWER = 5;
+    public static final int MAX_BOMB_POWER = 7;
     public static final int BOMB_FUSE_TIME = 2000; // ms
 
     // Configurações de Explosão
@@ -28,8 +28,8 @@ public class GameConstants {
 
     // Configurações de Power-Ups
     public static final float BASE_POWERUP_CHANCE = 0.3f; // 30%
-    public static final float POSITIVE_POWERUP_CHANCE = 0.7f; // 70%
-    public static final float NEGATIVE_POWERUP_CHANCE = 0.3f; // 30%
+    public static final float POSITIVE_POWERUP_CHANCE = 0.5f;
+    public static final float NEGATIVE_POWERUP_CHANCE = 0.5f;
     public static final float MIN_LUCK = 0.1f;
     public static final int POWERUP_DURATION = 15000; // 15s
 
@@ -39,4 +39,7 @@ public class GameConstants {
     // Configurações do HUD
     public static final int HUD_PADDING_X = 12; // Padding horizontal
     public static final int HUD_PADDING_Y = 12; // Padding vertical
+
+    public static final float ENEMY_BASE_SPEED = 0.1f; // Velocidade mais lenta
+    public static final int ENEMY_MOVE_DELAY = 1000; // 1 segundo entre movimentos
 }

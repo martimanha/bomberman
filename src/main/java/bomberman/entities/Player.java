@@ -1,13 +1,13 @@
 package bomberman.entities;
 
 import bomberman.managers.CollisionManager;
-import java.util.EnumMap;
-import java.util.Map;
-
 import bomberman.managers.StatusManager;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import static bomberman.GameConstants.*;
 
 public class Player {
@@ -42,7 +42,7 @@ public class Player {
         this.targetYTile = startYTile;
         this.pixelX = startXTile * TILE_SIZE;
         this.pixelY = startYTile * TILE_SIZE;
-        this.currentDirection = Direction.RIGHT;
+        this.currentDirection = Direction.DOWN;
         this.statusManager = statusManager;
         this.lastBombTime = 0;
         loadSprites();
@@ -120,6 +120,19 @@ public class Player {
     private void activateInvulnerability() {
         isInvulnerable = true;
         damageTime = System.currentTimeMillis();
+    }
+
+    public void placeBomb(List<Bomb> bombs) {
+        if (System.currentTimeMillis() - lastBombTime < 3000) return;
+
+        int x = getXTile();
+        int y = getYTile();
+
+        if (CollisionManager.canMoveTo(x, y, isInvulnerable())) {
+            Bomb newBomb = new Bomb(x, y, statusManager.getBombPower());
+            bombs.add(newBomb);
+            lastBombTime = System.currentTimeMillis();
+        }
     }
 
     public void draw(Graphics2D g2) {

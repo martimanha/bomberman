@@ -1,17 +1,18 @@
 package bomberman.ai;
 
-import bomberman.managers.CollisionManager;
-import static bomberman.GameConstants.*;
 import bomberman.entities.Enemy;
+import bomberman.managers.CollisionManager;
+
 import java.awt.Point;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.HashMap;
+import java.util.HashSet;
+import static bomberman.GameConstants.*;
 
 public class Pathfinder {
     private static final int[][] DIRECTIONS = {{1,0}, {-1,0}, {0,1}, {0,-1}};
@@ -59,7 +60,7 @@ public class Pathfinder {
             path.add(0, current);
             current = cameFrom.get(current);
         }
-        return path;
+        return path.size() > 0 ? path.subList(0, 1) : Collections.emptyList(); // Limita a 1 passo
     }
 
     private boolean isValid(Point p) {

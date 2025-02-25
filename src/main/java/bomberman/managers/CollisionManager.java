@@ -25,6 +25,7 @@ public class CollisionManager {
     public static boolean canMoveTo(int xTile, int yTile, boolean isInvulnerable) {
         if (isOutOfBounds(xTile, yTile)) return false;
         if (isSolidBlock(xTile, yTile)) return false;
+        if (isBombAtPosition(xTile, yTile)) return false;
         return isInvulnerable || !checkExplosionCollision(xTile, yTile);
     }
 
@@ -42,9 +43,18 @@ public class CollisionManager {
     }
 
     public static boolean checkExplosionCollision(int xTile, int yTile) {
+        if (isOutOfBounds(xTile, yTile) || map[yTile][xTile] == 'E') {
+            return false;
+        }
+
         return explosions.stream()
                 .flatMap(explosion -> explosion.getSegments().stream())
                 .anyMatch(seg -> seg[0] == xTile && seg[1] == yTile);
+    }
+
+    // Novo método para acesso às explosões
+    public static List<Explosion> getExplosions() {
+        return explosions;
     }
 
     public static char[][] getMap() {

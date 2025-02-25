@@ -2,10 +2,9 @@ package bomberman.entities;
 
 import bomberman.ai.AIController;
 import bomberman.managers.CollisionManager;
-import java.util.EnumMap;
 import java.util.List;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.Random;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -16,12 +15,11 @@ public class Enemy {
     private int targetXTile, targetYTile;
     private boolean isMoving = false;
     private final Map<Player.Direction, BufferedImage> sprites = new EnumMap<>(Player.Direction.class);
-    private final Random random = new Random();
-    private long lastMoveTime;
     private boolean isAlive = true;
     private Player.Direction currentDirection;
     private final List<Enemy> allEnemies;
     private final AIController aiController;
+    private long lastMoveTime; // Novo campo para controle de tempo
 
     public Enemy(int startXTile, int startYTile, List<Enemy> allEnemies) {
         this.targetXTile = startXTile;
@@ -31,7 +29,7 @@ public class Enemy {
         this.currentDirection = Player.Direction.DOWN;
         this.allEnemies = allEnemies;
         this.aiController = new AIController(this, allEnemies);
-        this.lastMoveTime = System.currentTimeMillis();
+        this.lastMoveTime = System.currentTimeMillis(); // Inicializa o tempo
         loadSprites();
     }
 
@@ -46,25 +44,22 @@ public class Enemy {
         if (!isAlive) return;
 
         aiController.update(player);
-
-        if (System.currentTimeMillis() - lastMoveTime > ENEMY_MOVE_INTERVAL) {
-            attemptMove();
-            lastMoveTime = System.currentTimeMillis();
-        }
-
         updatePosition();
         checkExplosionCollision();
     }
 
     private void checkExplosionCollision() {
-        if (CollisionManager.checkExplosionCollision(targetXTile, targetYTile)) {
+        int currentXTile = (int)(pixelX / TILE_SIZE);
+        int currentYTile = (int)(pixelY / TILE_SIZE);
+
+        if (CollisionManager.checkExplosionCollision(currentXTile, currentYTile)) {
             isAlive = false;
         }
     }
 
     private void updatePosition() {
         if (isMoving) {
-            double speed = 0.1;
+            double speed = ENEMY_BASE_SPEED; // Usando constante nova
             double targetX = targetXTile * TILE_SIZE;
             double targetY = targetYTile * TILE_SIZE;
 
@@ -75,22 +70,9 @@ public class Enemy {
                 pixelX = targetX;
                 pixelY = targetY;
                 isMoving = false;
+                lastMoveTime = System.currentTimeMillis(); // Atualiza ao terminar movimento
             }
         }
-    }
-
-    private void attemptMove() {
-        int direction = random.nextInt(4);
-        int dx = 0, dy = 0;
-
-        switch (direction) {
-            case 0: dy = -1; break;
-            case 1: dy = 1; break;
-            case 2: dx = -1; break;
-            case 3: dx = 1; break;
-        }
-
-        move(dx, dy);
     }
 
     public void move(int dx, int dy) {
@@ -100,13 +82,12 @@ public class Enemy {
         if (CollisionManager.canEnemyMoveTo(newX, newY, allEnemies)) {
             targetXTile = newX;
             targetYTile = newY;
+            isMoving = true;
 
             if (dx > 0) currentDirection = Player.Direction.RIGHT;
             else if (dx < 0) currentDirection = Player.Direction.LEFT;
             else if (dy > 0) currentDirection = Player.Direction.DOWN;
             else if (dy < 0) currentDirection = Player.Direction.UP;
-
-            isMoving = true;
         }
     }
 
@@ -117,10 +98,16 @@ public class Enemy {
         }
     }
 
+    // Novo getter para o tempo do último movimento
+    public long getLastMoveTime() {
+        return lastMoveTime;
+    }
+
     // Getters
     public int getXTile() { return targetXTile; }
     public int getYTile() { return targetYTile; }
     public boolean isAlive() { return isAlive; }
+    public boolean isMoving() { return isMoving; }
     public double getPixelX() { return pixelX; }
     public double getPixelY() { return pixelY; }
 }

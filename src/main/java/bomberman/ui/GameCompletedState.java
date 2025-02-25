@@ -33,8 +33,8 @@ public class GameCompletedState {
         int buttonY = SCREEN_HEIGHT - VERTICAL_OFFSET;
 
         menuButton = new Button(
-                "gameCompleted_menu/menu.png",
-                "gameCompleted_menu/menu_hover.png",
+                "gameCompleted_menu/exit.png",
+                "gameCompleted_menu/exit_hover.png",
                 buttonX,
                 buttonY
         );

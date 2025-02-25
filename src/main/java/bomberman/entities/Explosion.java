@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-
 import static bomberman.GameConstants.*;
 
 public class Explosion {
@@ -28,6 +27,13 @@ public class Explosion {
         expandDirection(centerX, centerY, -1, 0); // Esquerda
         expandDirection(centerX, centerY, 0, 1);  // Baixo
         expandDirection(centerX, centerY, 0, -1); // Cima
+
+        // Remove segmentos que coincidem com tiles de spawn de inimigos ('E')
+        segments.removeIf(seg -> {
+            int x = seg[0];
+            int y = seg[1];
+            return CollisionManager.getMap()[y][x] == 'E';
+        });
     }
 
     private void expandDirection(int startX, int startY, int dx, int dy) {
@@ -39,9 +45,7 @@ public class Explosion {
 
             char tile = CollisionManager.getMap()[y][x];
             if (tile == 'H') break; // Parede indestrutível
-
             addValidSegment(x, y);
-
             if (tile == 'B') { // Parede destrutível
                 CollisionManager.destroyBlock(x, y);
                 break;
