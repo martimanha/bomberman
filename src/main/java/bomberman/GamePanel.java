@@ -372,4 +372,5 @@ public class GamePanel extends JPanel implements Runnable {
         mainMenuState.setActive(false);
         isRunning = true;
     }
+
 }
