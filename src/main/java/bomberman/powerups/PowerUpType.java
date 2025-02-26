@@ -8,20 +8,17 @@ public enum PowerUpType {
     BOMB_POWER_UP(true),
     SPEED_UP(true),
     HEALTH_UP(true),
-    LUCK_UP(true),
     BOMB_POWER_DOWN(false),
     SPEED_DOWN(false),
-    HEALTH_DOWN(false),
-    LUCK_DOWN(false),
-    ENEMY_DAMAGE_UP(false);
+    HEALTH_DOWN(false);
 
     private final boolean positive;
     private static final Random random = new Random();
     private static final List<PowerUpType> POSITIVE_TYPES = Arrays.asList(
-            BOMB_POWER_UP, SPEED_UP, HEALTH_UP, LUCK_UP
+            BOMB_POWER_UP, SPEED_UP, HEALTH_UP
     );
     private static final List<PowerUpType> NEGATIVE_TYPES = Arrays.asList(
-            BOMB_POWER_DOWN, SPEED_DOWN, HEALTH_DOWN, LUCK_DOWN, ENEMY_DAMAGE_UP
+            BOMB_POWER_DOWN, SPEED_DOWN, HEALTH_DOWN
     );
 
     PowerUpType(boolean positive) {

@@ -12,38 +12,33 @@ public class GameConstants {
     public static final int PLAYER_START_LIVES = 3;
     public static final int PLAYER_MAX_LIVES = 3;
     public static final float PLAYER_BASE_SPEED = 0.2f;
-    public static final int PLAYER_INVULNERABILITY_DURATION = 2500; // ms
+    public static final int PLAYER_INVULNERABILITY_DURATION = 2500;
 
     // Configurações de Bombas
     public static final int BOMB_BASE_POWER = 1;
     public static final int MAX_BOMB_POWER = 7;
-    public static final int BOMB_FUSE_TIME = 2000; // ms
+    public static final int BOMB_FUSE_TIME = 2000;
 
     // Configurações de Explosão
-    public static final int EXPLOSION_DURATION = 500; // ms
+    public static final int EXPLOSION_DURATION = 500;
 
     // Configurações de Inimigos
-    public static final int ENEMY_MOVE_INTERVAL = 1000; // ms
-    public static final float ENEMY_BASE_DAMAGE = 1.0f;
+    public static final int ENEMY_MOVE_INTERVAL = 1000;
+    public static final float ENEMY_BASE_SPEED = 0.1f;
 
     // Configurações de Power-Ups
-    public static final float BASE_POWERUP_CHANCE = 0.3f; // 30%
-    public static final float POSITIVE_POWERUP_CHANCE = 0.5f;
-    public static final float NEGATIVE_POWERUP_CHANCE = 0.5f;
-    public static final float MIN_LUCK = 0.1f;
-    public static final int POWERUP_DURATION = 15000; // 15s
+    public static final float BASE_POWERUP_CHANCE = 0.3f;
+    public static final int POWERUP_DURATION = 15000;
 
     // Configurações de Velocidade
     public static final int MAX_SPEED_BOOSTS = 3;
 
     // Configurações do HUD
-    public static final int HUD_PADDING_X = 12; // Padding horizontal
-    public static final int HUD_PADDING_Y = 12; // Padding vertical
-
-    public static final float ENEMY_BASE_SPEED = 0.1f; // Velocidade mais lenta
-    public static final int ENEMY_MOVE_DELAY = 1000; // 1 segundo entre movimentos
-
-    public static final int LEVEL_TIME = 180; // 3 minutos em segundos
+    public static final int HUD_PADDING_X = 12;
+    public static final int HUD_PADDING_Y = 12;
     public static final int TIMER_X = SCREEN_WIDTH - 150;
     public static final int TIMER_Y = HUD_PADDING_Y + 20;
+
+    // Configurações de Tempo
+    public static final int LEVEL_TIME = 180;
 }

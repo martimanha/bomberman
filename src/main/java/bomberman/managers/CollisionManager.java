@@ -36,7 +36,7 @@ public class CollisionManager {
     }
 
     public static void destroyBlock(int x, int y) {
-        if (map[y][x] == 'B' || map[y][x] == 'S') { // Permitir destruir 'S'
+        if (map[y][x] == 'B' || map[y][x] == 'S') {
             map[y][x] = 'V';
             tryGeneratePowerUp(x, y);
         }
@@ -63,7 +63,7 @@ public class CollisionManager {
     public static boolean isSolidBlock(int x, int y) {
         if (isOutOfBounds(x, y)) return true;
         char tile = map[y][x];
-        return tile == 'H' || tile == 'B' || tile == 'S'; // Adicionar 'S' como sólido
+        return tile == 'H' || tile == 'B' || tile == 'S';
     }
 
     private static boolean isBombAtPosition(int x, int y) {
@@ -76,8 +76,7 @@ public class CollisionManager {
 
     private static void tryGeneratePowerUp(int x, int y) {
         if (Math.random() < BASE_POWERUP_CHANCE) {
-            PowerUpType type = (Math.random() < POSITIVE_POWERUP_CHANCE) ?
-                    PowerUpType.getRandomPositive() : PowerUpType.getRandomNegative();
+            PowerUpType type = PowerUpType.getRandomPositive();
             powerUps.add(new PowerUp(type, x, y));
         }
     }

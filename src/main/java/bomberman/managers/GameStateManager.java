@@ -31,7 +31,6 @@ public class GameStateManager {
     }
 
     private void updateEnemies() {
-        enemies.removeIf(enemy -> !enemy.isAlive());
         enemies.forEach(enemy -> enemy.update(player));
     }
 
@@ -45,7 +44,6 @@ public class GameStateManager {
                 explosion.getSegments().forEach(seg -> {
                     int x = seg[0];
                     int y = seg[1];
-                    // Atualiza apenas tiles afetados por explosões
                     if (gameMap[y][x] == 'B') gameMap[y][x] = 'V';
                 });
                 return true;
@@ -56,7 +54,7 @@ public class GameStateManager {
 
     private void checkPlayerStatus() {
         if (!statusManager.isAlive()) {
-            // Lógica de game over é tratada externamente
+            // Lógica de game over pode ser adicionada aqui
         }
     }
 

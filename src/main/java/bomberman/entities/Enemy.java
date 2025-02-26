@@ -2,34 +2,36 @@ package bomberman.entities;
 
 import bomberman.ai.AIController;
 import bomberman.managers.CollisionManager;
-import java.util.List;
-import java.util.EnumMap;
-import java.util.Map;
 import bomberman.utils.SpriteLoader;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import static bomberman.GameConstants.*;
 
 public class Enemy {
     private double pixelX, pixelY;
     private int targetXTile, targetYTile;
     private boolean isMoving = false;
-    private final Map<Player.Direction, BufferedImage> sprites = new EnumMap<>(Player.Direction.class);
     private boolean isAlive = true;
-    private Player.Direction currentDirection;
-    private final List<Enemy> allEnemies;
+    private final Point originalSpawn;
+    private long deathTime;
     private final AIController aiController;
     private long lastMoveTime;
+    private Player.Direction currentDirection;
+    private final Map<Player.Direction, BufferedImage> sprites = new EnumMap<>(Player.Direction.class);
 
     public Enemy(int startXTile, int startYTile, List<Enemy> allEnemies) {
+        this.originalSpawn = new Point(startXTile, startYTile);
         this.targetXTile = startXTile;
         this.targetYTile = startYTile;
         this.pixelX = startXTile * TILE_SIZE;
         this.pixelY = startYTile * TILE_SIZE;
-        this.currentDirection = Player.Direction.DOWN;
-        this.allEnemies = allEnemies;
         this.aiController = new AIController(this, allEnemies);
         this.lastMoveTime = System.currentTimeMillis();
+        this.currentDirection = Player.Direction.DOWN;
         loadSprites();
     }
 
@@ -41,17 +43,29 @@ public class Enemy {
     }
 
     public void update(Player player) {
-        if (!isAlive) return;
+        if (!isAlive) {
+            checkRespawn();
+            return;
+        }
 
         aiController.update(player);
         updatePosition();
         checkExplosionCollision();
     }
 
-    private void checkExplosionCollision() {
-        if (CollisionManager.checkExplosionCollision(targetXTile, targetYTile)) {
-            isAlive = false;
+    private void checkRespawn() {
+        if (System.currentTimeMillis() - deathTime >= 15000) {
+            respawn();
         }
+    }
+
+    private void respawn() {
+        isAlive = true;
+        targetXTile = originalSpawn.x;
+        targetYTile = originalSpawn.y;
+        pixelX = targetXTile * TILE_SIZE;
+        pixelY = targetYTile * TILE_SIZE;
+        isMoving = false;
     }
 
     private void updatePosition() {
@@ -72,11 +86,22 @@ public class Enemy {
         }
     }
 
+    private void checkExplosionCollision() {
+        if (CollisionManager.checkExplosionCollision(targetXTile, targetYTile)) {
+            die();
+        }
+    }
+
+    private void die() {
+        isAlive = false;
+        deathTime = System.currentTimeMillis();
+    }
+
     public void move(int dx, int dy) {
         int newX = targetXTile + dx;
         int newY = targetYTile + dy;
 
-        if (CollisionManager.canEnemyMoveTo(newX, newY, allEnemies)) {
+        if (CollisionManager.canEnemyMoveTo(newX, newY, aiController.getAllEnemies())) {
             targetXTile = newX;
             targetYTile = newY;
             isMoving = true;
@@ -91,7 +116,7 @@ public class Enemy {
     public void draw(Graphics2D g2) {
         if (isAlive) {
             BufferedImage currentSprite = sprites.get(currentDirection);
-            g2.drawImage(currentSprite, (int) pixelX, (int) pixelY, TILE_SIZE, TILE_SIZE, null);
+            g2.drawImage(currentSprite, (int)pixelX, (int)pixelY, TILE_SIZE, TILE_SIZE, null);
         }
     }
 

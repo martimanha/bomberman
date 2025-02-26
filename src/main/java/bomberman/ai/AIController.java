@@ -119,4 +119,8 @@ public class AIController {
     private double distance(Point a, Point b) {
         return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }
+
+    public List<Enemy> getAllEnemies() {
+        return allEnemies;
+    }
 }

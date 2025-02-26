@@ -38,17 +38,15 @@ public class HUDRenderer {
     private static void renderBottomHUD(Graphics2D g2, StatusManager statusManager) {
         g2.setFont(hudFont.deriveFont(16f));
         int lineHeight = g2.getFontMetrics().getHeight();
-        int startY = SCREEN_HEIGHT - HUD_PADDING_Y - lineHeight * 4;
+        int startY = SCREEN_HEIGHT - HUD_PADDING_Y - lineHeight * 2;
 
         renderBombPower(g2, statusManager, startY);
         renderSpeed(g2, statusManager, startY + lineHeight);
-        renderLuck(g2, statusManager, startY + lineHeight * 2);
-        renderDamage(g2, statusManager, startY + lineHeight * 3);
     }
 
     private static void renderTimer(Graphics2D g2, TimerManager timerManager) {
         int time = timerManager.getRemainingTime();
-        Color timerColor = (time <= 30) ? Color.RED : TEXT_COLOR; // Vermelho se ≤30s
+        Color timerColor = (time <= 30) ? Color.RED : TEXT_COLOR;
 
         g2.setFont(hudFont.deriveFont(20f));
         String timerText = String.format("Tempo: %02d:%02d", time / 60, time % 60);
@@ -56,7 +54,6 @@ public class HUDRenderer {
     }
 
     public static void drawTextWithOutline(Graphics2D g2, String text, int x, int y, Color mainColor) {
-        // Contorno
         g2.setColor(OUTLINE_COLOR);
         for (int dx = -OUTLINE_THICKNESS; dx <= OUTLINE_THICKNESS; dx++) {
             for (int dy = -OUTLINE_THICKNESS; dy <= OUTLINE_THICKNESS; dy++) {
@@ -66,7 +63,6 @@ public class HUDRenderer {
             }
         }
 
-        // Texto principal
         g2.setColor(mainColor);
         g2.drawString(text, x, y);
     }
@@ -92,18 +88,6 @@ public class HUDRenderer {
     private static void renderSpeed(Graphics2D g2, StatusManager status, int y) {
         int speedPercent = (int)(status.getSpeedMultiplier() * 100);
         String text = "Velocidade: " + speedPercent + "%";
-        drawTextWithOutline(g2, text, HUD_PADDING_X, y, TEXT_COLOR);
-    }
-
-    private static void renderLuck(Graphics2D g2, StatusManager status, int y) {
-        int luckPercent = (int)(status.getLuckMultiplier() * 100);
-        String text = "Sorte: " + luckPercent + "%";
-        drawTextWithOutline(g2, text, HUD_PADDING_X, y, TEXT_COLOR);
-    }
-
-    private static void renderDamage(Graphics2D g2, StatusManager status, int y) {
-        int damagePercent = (int)(status.getEnemyDamageMultiplier() * 100);
-        String text = "Dano: " + damagePercent + "%";
         drawTextWithOutline(g2, text, HUD_PADDING_X, y, TEXT_COLOR);
     }
 }
