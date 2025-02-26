@@ -139,7 +139,6 @@ public class Player {
         if (isAlive) {
             BufferedImage currentSprite = sprites.get(currentDirection);
             if (isInvulnerable) {
-                // Piscar durante invulnerabilidade
                 if ((System.currentTimeMillis() / 200) % 2 == 0) {
                     g2.drawImage(currentSprite, (int) pixelX, (int) pixelY, TILE_SIZE, TILE_SIZE, null);
                 }
@@ -159,7 +158,6 @@ public class Player {
         this.isAlive = true;
     }
 
-    // Getters
     public int getXTile() { return targetXTile; }
     public int getYTile() { return targetYTile; }
     public long getLastBombTime() { return lastBombTime; }

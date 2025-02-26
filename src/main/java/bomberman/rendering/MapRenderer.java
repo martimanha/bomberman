@@ -20,17 +20,15 @@ public class MapRenderer {
         int posX = x * TILE_SIZE;
         int posY = y * TILE_SIZE;
 
-        // Renderizar chão primeiro
         g2.drawImage(floorSprite, posX, posY, TILE_SIZE, TILE_SIZE, null);
 
-        // Renderizar blocos por cima
         switch(tile) {
-            case 'H': // Parede indestrutível
+            case 'H':
                 g2.drawImage(blockSprites[0], posX, posY, TILE_SIZE, TILE_SIZE, null);
                 break;
 
-            case 'B': // Parede destrutível
-            case 'S': // Bloco especial (mesmo sprite que destrutível)
+            case 'B':
+            case 'S':
                 g2.drawImage(blockSprites[1], posX, posY, TILE_SIZE, TILE_SIZE, null);
                 break;
         }

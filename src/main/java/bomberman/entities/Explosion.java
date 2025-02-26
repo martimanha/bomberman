@@ -23,10 +23,10 @@ public class Explosion {
 
     private void createExplosionPattern(int centerX, int centerY) {
         addValidSegment(centerX, centerY);
-        expandDirection(centerX, centerY, 1, 0);  // Direita
-        expandDirection(centerX, centerY, -1, 0); // Esquerda
-        expandDirection(centerX, centerY, 0, 1);  // Baixo
-        expandDirection(centerX, centerY, 0, -1); // Cima
+        expandDirection(centerX, centerY, 1, 0);
+        expandDirection(centerX, centerY, -1, 0);
+        expandDirection(centerX, centerY, 0, 1);
+        expandDirection(centerX, centerY, 0, -1);
     }
 
     private void expandDirection(int startX, int startY, int dx, int dy) {
@@ -37,11 +37,11 @@ public class Explosion {
             if (!isValidPosition(x, y)) break;
 
             char tile = CollisionManager.getMap()[y][x];
-            if (tile == 'H') break; // Parede indestrutível
+            if (tile == 'H' || tile == 'S') break;
 
             addValidSegment(x, y);
 
-            if (tile == 'B' || tile == 'S') { // Destruir 'S' também
+            if (tile == 'B') {
                 CollisionManager.destroyBlock(x, y);
             }
         }

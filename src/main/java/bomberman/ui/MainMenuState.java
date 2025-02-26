@@ -57,7 +57,7 @@ public class MainMenuState {
 
     public void handleClick(MouseEvent e, RulesMenuState rulesMenu) {
         if (playButton.isClicked(e)) {
-            isActive = false; // Inicia o jogo diretamente
+            isActive = false;
         } else if (rulesButton.isClicked(e)) {
             isActive = false;
             rulesMenu.setActive(true);
@@ -73,18 +73,14 @@ public class MainMenuState {
     }
 
     public void render(Graphics2D g2) {
-        // Fundo
         g2.drawImage(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, null);
 
-        // Título
         int titleX = (SCREEN_WIDTH - title.getWidth()) / 2;
         g2.drawImage(title, titleX, 100, null);
 
-        // Subtítulo
         int subtitleX = (SCREEN_WIDTH - subtitle.getWidth()) / 2;
         g2.drawImage(subtitle, subtitleX, 180, null);
 
-        // Botões
         playButton.render(g2);
         rulesButton.render(g2);
         exitButton.render(g2);

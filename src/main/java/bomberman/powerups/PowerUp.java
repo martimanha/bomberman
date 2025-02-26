@@ -30,10 +30,9 @@ public class PowerUp {
     }
 
     public BufferedImage getSprite() {
-        return PowerUpLoader.getSprite(type); // Correção aqui
+        return PowerUpLoader.getSprite(type);
     }
 
-    // Getters
     public boolean isActive() { return active; }
     public boolean isPositive() { return type.isPositive(); }
     public int getXTile() { return xTile; }

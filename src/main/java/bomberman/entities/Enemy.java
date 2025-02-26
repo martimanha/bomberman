@@ -120,7 +120,6 @@ public class Enemy {
         }
     }
 
-    // Getters
     public int getXTile() { return targetXTile; }
     public int getYTile() { return targetYTile; }
     public boolean isAlive() { return isAlive; }

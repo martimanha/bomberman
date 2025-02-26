@@ -54,7 +54,6 @@ public class GameStateManager {
 
     private void checkPlayerStatus() {
         if (!statusManager.isAlive()) {
-            // Lógica de game over pode ser adicionada aqui
         }
     }
 

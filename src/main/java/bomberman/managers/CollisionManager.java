@@ -63,7 +63,7 @@ public class CollisionManager {
     public static boolean isSolidBlock(int x, int y) {
         if (isOutOfBounds(x, y)) return true;
         char tile = map[y][x];
-        return tile == 'H' || tile == 'B' || tile == 'S';
+        return tile == 'H' || tile == 'B';
     }
 
     private static boolean isBombAtPosition(int x, int y) {

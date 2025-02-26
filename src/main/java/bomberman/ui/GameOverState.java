@@ -14,7 +14,6 @@ public class GameOverState {
     private Button exitButton;
     private boolean isActive;
 
-    // Configurações de layout
     private static final int BUTTON_WIDTH = 200;
     private static final int BUTTON_SPACING = -40;
     private static final int VERTICAL_OFFSET = 270;
@@ -64,7 +63,6 @@ public class GameOverState {
     }
 
     public void render(Graphics2D g2) {
-        // Renderiza apenas elementos do menu
         if (title != null) {
             int titleX = (SCREEN_WIDTH - title.getWidth()) / 2;
             g2.drawImage(title, titleX, TITLE_Y, null);

@@ -57,7 +57,6 @@ public class StatusManager {
         speedBoosts = Math.max(speedBoosts - 1, -MAX_SPEED_BOOSTS);
     }
 
-    // Getters
     public int getLives() { return lives; }
     public int getBombPower() { return bombPower; }
     public float getSpeedMultiplier() { return 1.0f + (0.1f * speedBoosts); }

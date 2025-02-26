@@ -94,13 +94,10 @@ public class MapManager {
     }
 
     private static boolean isValidSpecialTile(int x, int y, char[][] map, int playerX, int playerY) {
-        // 1. Distância mínima do jogador
         if (Math.abs(x - playerX) < 6 || Math.abs(y - playerY) < 6) return false;
 
-        // 2. Deve ser parede indestrutível
         if (map[y][x] != 'H') return false;
 
-        // 3. Deve ter pelo menos um bloco destrutível adjacente
         boolean hasDestructibleNeighbor = false;
         int[][] neighbors = {{x+1,y}, {x-1,y}, {x,y+1}, {x,y-1}};
         for (int[] n : neighbors) {

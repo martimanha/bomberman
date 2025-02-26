@@ -19,21 +19,18 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean isRunning;
     private final InputKey inputKey;
 
-    // Estados da UI
     private final MainMenuState mainMenuState;
     private final RulesMenuState rulesMenuState;
     private final GameOverState gameOverState;
     private final LevelCompleteMenu levelCompleteMenu;
     private final GameCompletedState gameCompletedState;
 
-    // Entidades
     private Player player;
     private List<Enemy> enemies;
     private List<Bomb> bombs;
     private List<Explosion> explosions;
     private List<PowerUp> powerUps;
 
-    // Gerenciadores
     private final MapManager mapManager;
     private final TimerManager timerManager;
     private char[][] gameMap;
@@ -49,7 +46,6 @@ public class GamePanel extends JPanel implements Runnable {
         mapManager = new MapManager();
         timerManager = new TimerManager(LEVEL_TIME);
 
-        // Inicialização de estados UI
         mainMenuState = new MainMenuState();
         rulesMenuState = new RulesMenuState();
         gameOverState = new GameOverState();
@@ -94,7 +90,7 @@ public class GamePanel extends JPanel implements Runnable {
         powerUps = new ArrayList<>();
 
         CollisionManager.initialize(gameMap, bombs, powerUps, explosions);
-        timerManager.reset(); // Resetar o timer ao iniciar novo nível
+        timerManager.reset();
     }
 
     private void loadSprites() {
@@ -238,7 +234,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void checkLevelTransition() {
-        if (gameMap[player.getYTile()][player.getXTile()] == 'S') {
+        int playerX = player.getXTile();
+        int playerY = player.getYTile();
+
+        if (gameMap[playerY][playerX] == 'S' && !levelCompleteMenu.isActive()) {
             if (mapManager.getRemainingMaps() == 0) {
                 gameCompletedState.activate();
             } else {
@@ -248,8 +247,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void loadNextLevel() {
-        startNewGame();
+        currentMapFile = mapManager.getRandomMap();
+        initializeGame(currentMapFile);
         levelCompleteMenu.deactivate();
+        timerManager.reset();
     }
 
     private void checkGameOver() {

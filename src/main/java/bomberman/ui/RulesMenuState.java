@@ -42,22 +42,17 @@ public class RulesMenuState {
 
     public void handleClick(MouseEvent e) {
         if (backButton.isClicked(e)) {
-            isActive = false; // Volta ao menu principal
+            isActive = false;
         }
     }
 
     public void render(Graphics2D g2) {
-        // Renderiza o fundo
         g2.drawImage(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, null);
-
-        // Renderiza a descrição centralizada
         if (description != null) {
             int descX = (SCREEN_WIDTH - description.getWidth()) / 2;
             int descY = (SCREEN_HEIGHT - description.getHeight()) / 2;
             g2.drawImage(description, descX, descY, null);
         }
-
-        // Renderiza o botão "Voltar"
         backButton.render(g2);
     }
 

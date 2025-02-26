@@ -13,7 +13,6 @@ public class GameCompletedState {
     private Button menuButton;
     private boolean isActive;
 
-    // Layout consistente com outros menus
     private static final int BUTTON_WIDTH = 200;
     private static final int VERTICAL_OFFSET = 270;
     private static final int TITLE_Y = 100;

@@ -14,7 +14,6 @@ public class LevelCompleteMenu {
     private Button exitButton;
     private boolean isActive;
 
-    // Configurações idênticas ao GameOverState
     private static final int BUTTON_WIDTH = 200;
     private static final int BUTTON_SPACING = -40;
     private static final int VERTICAL_OFFSET = 270;

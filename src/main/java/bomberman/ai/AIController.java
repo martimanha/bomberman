@@ -37,19 +37,16 @@ public class AIController {
 
         Point currentPos = new Point(enemy.getXTile(), enemy.getYTile());
 
-        // Prioridade 1: Fugir de explosões
         if (shouldEscapeExplosions(currentPos)) {
             moveAwayFromExplosions(currentPos);
             return;
         }
 
-        // Prioridade 2: Perseguir jogador
         if (shouldChasePlayer(player, currentPos)) {
             chasePlayer(player, currentPos);
             return;
         }
 
-        // Movimento aleatório padrão
         moveRandomly();
     }
 
